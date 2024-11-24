@@ -1,0 +1,48 @@
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+body>div {
+    width: 50%;
+    height: 50%;
+    overflow: hidden;
+}
+
+.esquinaIzq div {
+    width: 0;
+    height: 0;
+    position: relative;
+}
+
+.esquinaDer {
+    position: relative;
+}
+
+.esquinaDer div {
+    width: 0;
+    height: 0;
+    position: relative;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+main {
+    background-color: #79AC78;
+    position: absolute;
+    z-index: 3;
+    text-align: center;
+    padding: 15px;
+    border-radius: 20px;
+    max-width: 450px;
+}
+
+.recuContra {
+    position: relative;
+    cursor: pointer;
+    width: fit-content;
+}

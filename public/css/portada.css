@@ -1,0 +1,147 @@
+main {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 15% 55% 30%;
+    grid-template-rows: 1fr 1fr;
+}
+
+.detrasContenido {
+    visibility: hidden;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10;
+}
+
+#detrasSalirSinGuardar {
+    visibility: hidden;
+    position: absolute;
+    z-index: 15;
+    width: 100%;
+    height: 100%;
+}
+
+#salirSinGuardar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    background-color: #79AC78;
+    border-radius: 20px;
+    z-index: 20;
+    padding: 10px;
+    text-align: center;
+}
+
+#salirSinGuardar h3 {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+#salirSinGuardar div {
+    display: flex;
+    justify-content: space-between;
+}
+
+#salirSinGuardar div * {
+    flex: 1;
+}
+
+.contenido {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    background-color: #D0E7D2;
+    padding: 20px;
+}
+
+.tituloContenido {
+    display: flex;
+    justify-content: space-between;
+}
+
+.contenidoCrearEvento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.xIcon {
+    color: red;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tusEventos {
+    background-color: #79AC78;
+    grid-row: 1 / 3;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    overflow-y: auto;
+    max-height: 800px;
+}
+
+.crearEvento {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.tusEventos section {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.evento {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    border-radius: 25px;
+    align-items: center;
+    min-height: 50px;
+    cursor: pointer;
+}
+
+#evento0{
+    background-color: red;
+}
+
+#evento1{
+    background-color: yellow;
+}
+
+.imgEventoPequeno {
+    min-width: 50px;
+    min-height: 50px;
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: cover;
+    border-radius: 25px;
+    margin-right: 5px;
+}
+
+.chats {
+    background-color: #79AC78;
+    grid-row: 1 / 3;
+    margin: 10px;
+}
+
+.eventosPublicos {
+    background-color: #79AC78;
+    margin: 10px;
+}
+
+.calendario {
+    background-color: #79AC78;
+    margin: 10px;
+}
