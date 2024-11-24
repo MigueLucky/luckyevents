@@ -18,8 +18,8 @@ $(function () {
         img2 = Math.floor(Math.random() * 8);
     } while (img1 === img2);
 
-    $(".esquinaIzq > img").attr("src", `/img/fotosIndex/${nombresImagenes[img1]}`);
-    $(".esquinaDer > img").attr("src", `/img/fotosIndex/${nombresImagenes[img2]}`);    
+    $(".esquinaIzq > img").attr("src", `/img/${nombresImagenes[img1]}`);
+    $(".esquinaDer > img").attr("src", `/img/${nombresImagenes[img2]}`);    
 
     $('main').on('mouseenter', '.recuContra', function () {
         $(this).css("color", "#B0D9B1");

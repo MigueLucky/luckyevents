@@ -13,3 +13,15 @@ Route::get('/terminos', function () {
 Route::get('/portada', function () {
     return view('portada');
 });
+
+Route::get('/perfil', function () {
+    return view('perfil');
+});
+
+Route::get('/foros', function () {
+    return view('listaForos');
+})->name('foros');
+
+Route::get('/eventos', function () {
+    return view('listaEventos');
+})->name('eventos');
