@@ -18,9 +18,15 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'admin',               
+        'nombre',             
+        'apellido',            
+        'foto',               
+        'email',              
+        'password',            
+        'ubicacionFavorita',   
+        'leyenda',           
+        'gustos',    
     ];
 
     /**
@@ -31,6 +37,12 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'gustos' => 'array',
+        'admin' => 'boolean',
     ];
 
     /**
@@ -44,5 +56,27 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function vehiculos()
+    {
+        return $this->hasMany(Vehiculo::class, 'id_usuario');
+    }
+    
+    public function mensajes()
+    {
+        return $this->hasMany(Mensaje::class, 'id_usuario');
+    }
+    
+    public function eventos()
+    {
+        return $this->belongsToMany(Evento::class, 'usuario_eventos', 'id_usuario', 'id_evento')
+                    ->withTimestamps();
+    }
+    
+    public function foros()
+    {
+        return $this->belongsToMany(Foro::class, 'usuario_foros', 'id_usuario', 'id_foro')
+                    ->withTimestamps();
     }
 }
