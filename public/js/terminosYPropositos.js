@@ -1,8 +1,4 @@
 $(function () {
-    $('html').on('click', 'header h1', function () {
-        window.location.href = '/portada';
-    });
-
     $('body').on('click', '.volverAtras', function () {
         window.history.back();
     });

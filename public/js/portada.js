@@ -1,8 +1,4 @@
 $(function () {
-    $('html').on('click', 'header h1', function () {
-        window.location.href = '/portada';
-    });
-    
     $('.crearEvento').on('click', function () {
         $('.detrasContenido').css('visibility', 'visible');
         $('.contenido').html(`

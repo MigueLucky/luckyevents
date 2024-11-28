@@ -1,6 +1,4 @@
 $(function () {
-    $("h1").css("cursor", "default");
-
     const nombresImagenes = [
         "barbacoa.jpg",
         "cumpleanos.jpg",
@@ -18,8 +16,8 @@ $(function () {
         img2 = Math.floor(Math.random() * 8);
     } while (img1 === img2);
 
-    $(".esquinaIzq > img").attr("src", `/img/${nombresImagenes[img1]}`);
-    $(".esquinaDer > img").attr("src", `/img/${nombresImagenes[img2]}`);    
+    $(".esquinaIzq > img").attr("src", `/img/index/${nombresImagenes[img1]}`);
+    $(".esquinaDer > img").attr("src", `/img/index/${nombresImagenes[img2]}`);    
 
     $('main').on('mouseenter', '.recuContra', function () {
         $(this).css("color", "#B0D9B1");
