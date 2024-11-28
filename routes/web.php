@@ -23,13 +23,13 @@ Route::get('/perfil', function () {
     return view('perfil');
 });
 
-Route::get('/foros', function () {
+Route::get('/listaForos', function () {
     return view('listaForos');
-})->name('foros');
+});
 
-Route::get('/eventos', function () {
+Route::get('/listaEventos', function () {
     return view('listaEventos');
-})->name('eventos');
+});
 
 Route::resource('users', UserController::class);
 Route::resource('eventos', eventoController::class);

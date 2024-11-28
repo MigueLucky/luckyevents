@@ -1,0 +1,19 @@
+.ordenYFiltro {
+    display: flex;
+    margin: 10px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ordenYFiltro p{
+    margin: 0;
+}
+
+.filtro {
+    display: flex;
+    align-items: center;
+}
+
+.evento {
+    border-radius: 25px;
+}
