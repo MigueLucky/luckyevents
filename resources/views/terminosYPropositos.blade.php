@@ -10,9 +10,7 @@
 </head>
 
 <body>
-    <header>
-        <h1>LuckyEvents</h1>
-    </header>
+    @include('components.header')
     <main>
         <div>
             <div class="terminos">
@@ -69,11 +67,7 @@
             Para cualquier pregunta sobre estos Términos y Condiciones, puede ponerse en contacto con nosotros a través de correo electrónico: comunicacion@luckyevents.com.
         </div>
     </main>
-    <footer>
-        <h4>comunicacion@luckyevents.com</h4>
-        <h4>Terminos y condiciones</h4>
-        <h4>Proposito del proyecto</h4>
-    </footer>
+    @include('components.footer')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="{{ asset('js/general.js') }}"></script>
     <script src="{{ asset('js/terminosYPropositos.js') }}"></script>

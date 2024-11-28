@@ -10,9 +10,7 @@
 </head>
 
 <body>
-    <header>
-        <h1>LuckyEvents</h1>
-    </header>
+    @include('components.header')
     <main>
         <article class="ordenYFiltro">
             <section class="filtro">
@@ -39,11 +37,7 @@
         <article class="todosEventos">
         </article>
     </main>
-    <footer>
-        <h4>comunicacion@luckyevents.com</h4>
-        <h4>Terminos y condiciones</h4>
-        <h4>Proposito del proyecto</h4>
-    </footer>
+    @include('components.footer')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="{{ asset('js/general.js') }}"></script>
     <script src="{{ asset('js/listaEventos.js') }}"></script>
