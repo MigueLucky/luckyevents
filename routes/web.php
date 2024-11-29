@@ -32,6 +32,7 @@ Route::get('/listaEventos', function () {
 });
 
 Route::resource('users', UserController::class);
+Route::post('/login', [UserController::class, 'login']);
 Route::resource('eventos', eventoController::class);
 Route::resource('foros', foroController::class);
 Route::resource('mensajes', mensajeController::class);

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->boolean('admin')->default(false);
             $table->boolean('bloqueado')->default(false);
             $table->string('nombre');
-            $table->string('apellido');
+            $table->string('apellido')->nullable();
             $table->string('foto')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

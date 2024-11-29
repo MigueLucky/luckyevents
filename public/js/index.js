@@ -17,7 +17,7 @@ $(function () {
     } while (img1 === img2);
 
     $(".esquinaIzq > img").attr("src", `/img/index/${nombresImagenes[img1]}`);
-    $(".esquinaDer > img").attr("src", `/img/index/${nombresImagenes[img2]}`);    
+    $(".esquinaDer > img").attr("src", `/img/index/${nombresImagenes[img2]}`);
 
     $('main').on('mouseenter', '.recuContra', function () {
         $(this).css("color", "#B0D9B1");
@@ -34,20 +34,28 @@ $(function () {
         $("main").append("<p class='volverAtras'>↩Volver atras</p>");
         $("main").append("<input class='inputEmail' type='email' placeholder='Correo electrónico'>");
         $("main").append("<input class='inputContrasena' type='password' placeholder='Contraseña'>");
-        $("main").append("<p color: red;' class='mensajeError'></p>");
+        $("main").append("<p style='color: red;' class='mensajeError'></p>");
         $("main").append("<p class='boton botonIniciarSesion'>Enviar</p>");
 
         $(".botonIniciarSesion").off().on("click", function () {
             let email = $(".inputEmail").val();
             let contrasena = $(".inputContrasena").val();
 
-            if (!email) {
+            let textoError = "Por favor coloca los siguientes apartados: ";
 
+            if (!email || !contrasena) {
+                if (!email) {
+                    textoError += "email ";
+                }
+                if (!contrasena) {
+                    textoError += "contraseña";
+                }
+
+                $(".mensajeError").text(textoError)
+            } else {
+                $(".mensajeError").text("");
+                iniciarsesion(email, contrasena);
             }
-            if (!contrasena) {
-
-            }
-
         })
 
         posicionElementos()
@@ -61,25 +69,41 @@ $(function () {
         $("main").append("<input class='inputNombre' type='text' placeholder='Nombre'>");
         $("main").append("<input class='inputEmail' type='email' placeholder='Correo electrónico'>");
         $("main").append("<input class='inputContrasena' type='password' placeholder='Contraseña'>");
-        $("main").append("<p color: red;' class='mensajeError'></p>");
+        $("main").append("<input class='inputContrasenaConfirm' type='password' placeholder='Repite la contraseña'>");
+        $("main").append("<p style='color: red;' class='mensajeError'></p>");
         $("main").append("<p class='boton botonRegistrarse'>Enviar</p>")
 
         $(".botonRegistrarse").off().on("click", function () {
             let nombre = $(".inputNombre").val();
             let email = $(".inputEmail").val();
             let contrasena = $(".inputContrasena").val();
-            let textoError = $("Por favor coloca ");
+            let contrasenaConfirm = $(".inputContrasenaConfirm").val();
 
-            if (!nombre) {
-                textoError = textoError + "un nombre "
-            }
-            if (!email) {
-                textoError = textoError + "un email "
-            }
-            if (!contrasena) {
-                textoError = textoError + "una contraseña "
-            }
+            let textoError = "Por favor coloca los siguientes apartados: ";
 
+            if (!nombre || !email || !contrasena || contrasena !== contrasenaConfirm) {
+                if (!nombre) textoError += "nombre ";
+                if (!email) textoError += "email ";
+                if (!contrasena) textoError += "contraseña ";
+                if (contrasena !== contrasenaConfirm) textoError = "Las contraseñas tienen que ser iguales";
+                $(".mensajeError").text(textoError);
+            } else {
+                $(".mensajeError").text("");
+
+                const avatares = [
+                    "avatarAmarillo.png",
+                    "avatarAzul.png",
+                    "avatarAzulVerde.png",
+                    "avatarMagenta.png",
+                    "avatarRojo.png",
+                    "avatarVerde.png"
+                ];
+
+                let img = Math.floor(Math.random() * 6);
+                let foto = `/img/avatarPredeterminado/${avatares[img]}`;
+
+                registrar(nombre, email, contrasena, foto);
+            }
         })
 
         posicionElementos()
@@ -109,6 +133,70 @@ $(function () {
 
         posicionElementos()
     })
+
+    async function iniciarsesion(email, contrasena) {
+        try {
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+            let response = await fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: contrasena,
+                }),
+            });
+    
+            if (response.ok) {
+                let data = await response.json();
+    
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                window.location.href = "/portada";
+            } else {
+                $(".mensajeError").text("Email o contraseña incorrectos");
+            }
+        } catch (error) {
+            $(".mensajeError").text("Hubo un error en la comunicación con el servidor.");
+        }
+    }
+
+    async function registrar(nombre, email, contrasena, foto) {
+        try {
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            let response = await fetch("/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken
+                },
+                body: JSON.stringify({
+                    nombre: nombre,
+                    email: email,
+                    password: contrasena,
+                    foto: foto,
+                }),
+            });
+
+            if (response.ok) {
+                iniciarsesion(email, contrasena);
+            } else {
+                if (response.status === 422) {
+                    $(".mensajeError").text("El email ya está en uso.");
+                } else {
+                    $(".mensajeError").text("Ha ocurrido un error al registrar.");
+                    console.log(response.error);
+                    
+                }
+            }
+        } catch (error) {
+            $(".mensajeError").text("Error en la conexión. Intenta más tarde.");
+        }
+    }
 
     $('main').on('click', '.volverAtras', function () {
         $("main").html("");
