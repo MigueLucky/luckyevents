@@ -152,7 +152,7 @@ $(function () {
     
             if (response.ok) {
                 let data = await response.json();
-    
+
                 localStorage.setItem('user', JSON.stringify(data.user));
 
                 window.location.href = "/portada";
@@ -189,8 +189,6 @@ $(function () {
                     $(".mensajeError").text("El email ya está en uso.");
                 } else {
                     $(".mensajeError").text("Ha ocurrido un error al registrar.");
-                    console.log(response.error);
-                    
                 }
             }
         } catch (error) {
