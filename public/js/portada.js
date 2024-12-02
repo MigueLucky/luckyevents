@@ -1,5 +1,5 @@
 $(function () {
-    $('.crearEvento').on('click', function () {
+    $('.crearEvento p').on('click', function () {
         $('.detrasContenido').css('visibility', 'visible');
         $('.contenido').html(`
             <div class="tituloContenido">

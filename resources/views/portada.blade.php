@@ -28,7 +28,7 @@
         </article>
         <article class="tusEventos">
             <section class="crearEvento">
-                <p>Crear nuevo evento</p>
+                <p class="boton">Crear nuevo evento</p>
             </section>
             <section class="evento" id="evento0">
                 <img class="imgEventoPequeno" src="img/fotosIndex/barbacoa.jpg">
