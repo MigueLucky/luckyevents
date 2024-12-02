@@ -17,6 +17,14 @@ Route::get('/login', function () {
     return view('welcome');
 });
 
+Route::get('/logout', function () {
+    if (Auth::check()) {
+        return redirect('/portada');
+    }
+
+    return view('welcome');
+});
+
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect('/portada');
@@ -62,6 +70,7 @@ Route::get('/terminos', function () {
 })->name('terminos');
 
 Route::resource('users', UserController::class);
+Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/login', [UserController::class, 'login']);
 Route::resource('eventos', eventoController::class);
 Route::resource('foros', foroController::class);
