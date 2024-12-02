@@ -31,7 +31,7 @@
                 <p class="boton">Crear nuevo evento</p>
             </section>
             <section class="evento" id="evento0">
-                <img class="imgEventoPequeno" src="img/fotosIndex/barbacoa.jpg">
+                <img class="imgEventoPequeno" src="img/index/barbacoa.jpg">
                 <p>evento1</p>
             </section>
             <section class="evento" id="evento1">
