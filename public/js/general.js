@@ -6,8 +6,8 @@ $(function () {
                 <div>
                     <img class="imgUsu">
                     <div class="ajustesUsu">
-                        <p class="perfil boton">Pefil</p>
-                        <p class="cerrarSesion boton">Cerrar sesion</p>
+                        <p class="perfil boton">Perfil</p>
+                        <p class="cerrarSesion boton">Cerrar sesión</p>
                     </div>
                 </div>`
             );
@@ -18,14 +18,16 @@ $(function () {
                 <div>
                     <img class="imgUsu">
                     <div class="ajustesUsu">
-                        <p class="perfil boton">Pefil</p>
-                        <p class="cerrarSesion boton">Cerrar sesion</p>
+                        <p class="perfil boton">Perfil</p>
+                        <p class="cerrarSesion boton">Cerrar sesión</p>
                     </div>
                 </div>`
             );
+
             $(".volverPortada").on("click", function () {
                 window.location.href = '/portada';
             })
+            
             $(".volverPortada").css({"cursor": "pointer"})
         }
         $("h1").on("click", function () {
