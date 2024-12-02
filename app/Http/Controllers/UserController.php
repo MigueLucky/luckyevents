@@ -48,16 +48,16 @@ class UserController extends Controller
     }
 
     public function logout(Request $request)
-{
-    Auth::logout();
+    {
+        Auth::logout();
 
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    return response()->json([
-        'message' => 'Logout successful'
-    ], 200);
-}
+        return response()->json([
+            'message' => 'Logout successful'
+        ], 200);
+    }
 
     public function show($id)
     {
