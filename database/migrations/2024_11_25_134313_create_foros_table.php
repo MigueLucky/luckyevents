@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('descripcion')->nullable();
             $table->string('ubicacion')->nullable();
             $table->string('color')->nullable();
-            $table->string('gusto')->nullable();
             $table->boolean('report')->default(false);
             $table->string('razonReport')->nullable();
             $table->timestamps();

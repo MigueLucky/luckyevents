@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('ubicacion')->nullable();
             $table->string('color')->nullable();
             $table->json('links')->nullable();
-            $table->string('gusto')->nullable();
             $table->boolean('report')->default(false);
             $table->string('razonReport')->nullable();
             $table->timestamps();

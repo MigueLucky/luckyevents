@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('password');
             $table->string('ubicacionFavorita')->nullable(); 
             $table->string('leyenda')->nullable();
-            $table->json('gustos')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

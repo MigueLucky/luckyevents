@@ -23,7 +23,6 @@ class EventosTableSeeder extends Seeder
                     ['nombre' => 'hola', 'link' => 'https://hola.com'],
                     ['nombre' => 'hola2', 'link' => 'https://hola2.com']
                 ]),
-                'gusto' => 'historia',
                 'report' => false,
                 'razonReport' => null,
                 'created_at' => now(),
@@ -42,7 +41,6 @@ class EventosTableSeeder extends Seeder
                     ['nombre' => 'hola3', 'link' => 'https://hola3.com'],
                     ['nombre' => 'hola4', 'link' => 'https://hola4.com']
                 ]),
-                'gusto' => 'deportes',
                 'report' => false,
                 'razonReport' => null,
                 'created_at' => now(),
