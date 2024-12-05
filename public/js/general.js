@@ -1,28 +1,12 @@
 $(function () {
     if (localStorage.length > 0) {
         if (window.location.href.includes('portada')) {
-            $("header").html(
-                `<h1>LuckyEvents</h1>
-                <div  class="imgUsu">
-                    <img>
-                    <div class="ajustesUsu">
-                        <p class="perfil boton">Perfil</p>
-                        <p class="cerrarSesion boton">Cerrar sesión</p>
-                    </div>
-                </div>`
-            );
+            $(".imgUsu").show();
+            $(".volverPortada").show();
+            $(".volverPortada").html("");
         } else {
-            $("header").html(
-                `<h1>LuckyEvents</h1>
-                <p class="volverPortada">↩Volver a la portada</p>
-                <div class="imgUsu">
-                    <img>
-                    <div class="ajustesUsu">
-                        <p class="perfil boton">Perfil</p>
-                        <p class="cerrarSesion boton">Cerrar sesión</p>
-                    </div>
-                </div>`
-            );
+            $(".imgUsu").show();
+            $(".volverPortada").show();
 
             $(".volverPortada").on("click", function () {
                 window.location.href = '/portada';
@@ -30,7 +14,8 @@ $(function () {
 
             $(".volverPortada").css({ "cursor": "pointer" })
         }
-        $("h1").on("click", function () {
+
+        $("h1").off().on("click", function () {
             window.location.href = '/portada';
         })
         $("h1").css({ "cursor": "pointer" })
@@ -55,7 +40,8 @@ $(function () {
             "background-color": "#D0E7D2",
             "padding": "10px",
             "position": "absolute",
-            "border-radius": "0 0 25% 25%"
+            "border-radius": "0 0 25% 25%",
+            "transform": "translateX(-25%)"
         });
 
         $(".ajustesUsu").hide();
@@ -69,7 +55,6 @@ $(function () {
         })
 
         $(".cerrarSesion").on("click", function () {
-            
             logout()
         })
 
@@ -95,20 +80,25 @@ $(function () {
         }
     } else {
         if (window.location.href.includes('terminos')) {
-            $("header").html(
-                `<h1>LuckyEvents</h1>
-                <p class="volverIndex">↩Volver al index</p>
-                `
-            );
-            $("h1").on("click", function () {
+            $(".volverPortada").show();
+            $(".volverPortada").text("↩Volver al inicio");
+            $(".imgUsu").show();
+            $(".imgUsu").html("");
+
+            $("h1").off().on("click", function () {
                 window.location.href = '/';
             })
             $("h1").css({ "cursor": "pointer" })
 
-            $(".volverIndex").on("click", function () {
+            $(".volverPortada").off().on("click", function () {
                 window.location.href = '/';
             })
-            $(".volverIndex").css({ "cursor": "pointer" })
+            $(".volverPortada").css({ "cursor": "pointer" })
+        }else{
+            $("h1").css({
+                "position": "unset"
+            })
+            $(".headerSinH1").hide();
         }
     }
 

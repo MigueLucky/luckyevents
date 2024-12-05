@@ -46,3 +46,11 @@ main {
     cursor: pointer;
     width: fit-content;
 }
+
+.volverAtras {
+    cursor: pointer;
+    text-align: left;
+    width: fit-content;
+    margin: 10px;
+    margin-left: 15px;
+}
