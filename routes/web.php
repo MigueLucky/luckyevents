@@ -70,6 +70,7 @@ Route::get('/terminos', function () {
 })->name('terminos');
 
 Route::resource('users', UserController::class);
+Route::post('/eventosPorUsuario', [EventoController::class, 'eventosPorUsuario']);
 Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/login', [UserController::class, 'login']);
 Route::resource('eventos', eventoController::class);

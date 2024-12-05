@@ -1,5 +1,56 @@
 $(function () {
-    $('.crearEvento p').on('click', function () {
+    let usuarioData = localStorage.getItem("user");
+    let usuario = JSON.parse(usuarioData);
+    let idUsuario = usuario.id;
+
+    let tiempoTranscurrido = Date.now();
+    let hoy = new Date(tiempoTranscurrido);
+
+    async function eventosPorUsuario() {
+        $(".tusEventos").html(`
+                <section class="crearEvento">
+                    <p class="boton">Crear nuevo evento</p>
+                </section>
+            `)
+        try {
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            let response = await fetch("/eventosPorUsuario", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken
+                },
+                body: JSON.stringify({
+                    idUsuario: idUsuario
+                }),
+            });
+
+            if (response.ok) {
+                let eventos = await response.json();
+
+                eventos.forEach(evento => {
+                    if(hoy.toISOString() < evento.fechaHoraFin){
+                        let eventoHtml = `
+                        <section class="evento" id="evento${evento.id}" style="background-color:${evento.color};">
+                            <img class="imgEventoPequeno" src="${evento.foto}">
+                            <p>${evento.nombre}</p>
+                        </section>
+                    `;
+                    $(".tusEventos").append(eventoHtml);
+                    }
+                });
+            } else {
+                $(".tusEventos").append("<p>No se pudieron cargar los eventos.</p>");
+            }
+        } catch (error) {
+            $(".tusEventos").append("<p>Hubo un error en la comunicación con el servidor.</p>");
+        }
+    }
+
+    eventosPorUsuario()
+    //Crear eventos
+    $("html").on('click', '.crearEvento p', function () {
         $('.detrasContenido').css('visibility', 'visible');
         $('.contenido').html(`
             <div class="tituloContenido">
@@ -16,7 +67,7 @@ $(function () {
                     <input type="text" id="descripcionEvento" name="descripcionEvento" placeholder="Descripción del evento">
                 </div>
                 <div>
-                    <label for="privacidadEvento">Evento privado:</label>
+                    <label for="privacidadEvento">Evento publico:</label>
                     <input type="checkbox" id="privacidadEvento" name="privacidadEvento" style="transform: scale(1.5);">
                 </div>
                 <div>
@@ -55,7 +106,8 @@ $(function () {
                     <ul id="linksList" style="max-height: 70px; overflow-y: auto;width: fit-content; padding: 10px;"></ul>
                 </div>
             </div>
-            <p class="boton" id="guardarYSalir">Guardar y salir</p>
+            <p class="mensajeError2" style="color:red;"></p>
+            <p class="boton" id="guardarYSalir" style="margin: 1% 10% 1% 10%">Guardar y salir</p>
         `);
 
         $("#fotoEvento").on("change", function (e) {
@@ -73,13 +125,18 @@ $(function () {
             }
         });
 
+        let linksArray = [];
+
         $("#addLink").on("click", function () {
             let name = $("#nombreLink").val().trim();
             let url = $("#urlLink").val().trim();
             let linksList = $("#linksList");
 
             if (name && url) {
+                linksArray.push({ nombre: name, link: url });
+
                 linksList.append(`<li style="margin: 5px; list-style-type: none;"><a href="${url}" target="_blank">${name}</a></li>`);
+
                 $("#nombreLink").val('');
                 $("#urlLink").val('');
                 $(".errorLinkExterno").css("visibility", "hidden");
@@ -92,10 +149,65 @@ $(function () {
             guardarYSalir();
         });
 
-        function guardarYSalir() {
-            $('#detrasSalirSinGuardar').css('visibility', 'hidden');
-            $('.detrasContenido').css('visibility', 'hidden');
-            $('.contenido').html("");
+        async function guardarYSalir() {
+            let nombre = $("#nombreEvento").val();
+            let descripcion = $("#descripcionEvento").val();
+            let privacidadEvento = $("#privacidadEvento").val();
+            let colorEvento = $("#colorEvento").val();
+            let fechaHoraInicio = $("#inicioEvento").val();
+            let ubicacionEvento = $("#ubicacionEvento").val();
+            let fechaHoraFin = $("#finEvento").val();
+            let fotoEvento = $("#fotoEvento")[0].files[0];
+
+            let textoError = "Los siguientes apartados son obligatorios: ";
+
+            if (!nombre || !fechaHoraInicio || !fechaHoraFin || hoy.toISOString() > fechaHoraInicio || fechaHoraInicio > fechaHoraFin) {
+                if (!nombre) textoError += "nombre del evento ";
+                if (!fechaHoraInicio) textoError += "cuando inicia el evento ";
+                if (!fechaHoraFin) textoError += "cuando acaba el evento ";
+                if (hoy.toISOString() > fechaHoraInicio) textoError = "La fecha de inicio no puede estar en el pasado";
+                if (fechaHoraInicio > fechaHoraFin) textoError = "El evento no puede acabar antes de empezar";
+                $(".mensajeError2").text(textoError);
+                $('#detrasSalirSinGuardar').css('visibility', 'hidden');
+            } else {
+                $(".mensajeError2").text("");
+
+                try {
+                    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    let formData = new FormData();
+                    formData.append("nombre", nombre);
+                    formData.append("privacidad", privacidadEvento);
+                    formData.append("fechaHoraInicio", fechaHoraInicio);
+                    formData.append("fechaHoraFin", fechaHoraFin);
+                    formData.append("foto", fotoEvento);
+                    formData.append("descripcion", descripcion);
+                    formData.append("ubicacion", ubicacionEvento);
+                    formData.append("color", colorEvento);
+                    formData.append("links", JSON.stringify(linksArray));
+
+                    let response = await fetch("eventos", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": csrfToken
+                        },
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        eventosPorUsuario();
+                        $('#detrasSalirSinGuardar').css('visibility', 'hidden');
+                        $('.detrasContenido').css('visibility', 'hidden');
+                        $('.contenido').html("");
+                    } else {
+                        $(".mensajeError2").text("Error al crear el evento");
+                        let responseData = await response.json();
+                        $(".mensajeError2").text(responseData.error);
+                    }
+                } catch (error) {
+                    $(".mensajeError2").text("Error al crear el evento, vuelve a intentarlo");
+                }
+            }
         }
 
         $(".xIcon").off().on("click", function () {
@@ -119,7 +231,8 @@ $(function () {
         });
     });
 
-    $(".evento").on("click", function () {
+    //Mostrar eventos
+    $("html").on("click", ".evento", function () {
         $('.detrasContenido').css('visibility', 'visible');
         $('.contenido').html(`
             <div class="tituloContenido">
@@ -133,4 +246,17 @@ $(function () {
             $('.contenido').html("");
         });
     });
+
+    //CHATS
+    $(".agregarAmigoP").on("click", function () {
+        $(".agregarAmigoDIV").toggle();
+    })
+
+    $(".agregarAmigo").on("click", function () {
+        $(".agregarAmigoDIV").hide();
+        $(".agregarAmigoConfirmacion").show();
+        setTimeout(function () {
+            $(".agregarAmigoConfirmacion").hide();
+        }, 5000);
+    })
 });

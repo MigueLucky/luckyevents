@@ -26,22 +26,28 @@
             </section>
             <section class="contenido"></section>
         </article>
-        <article class="tusEventos">
-            <section class="crearEvento">
-                <p class="boton">Crear nuevo evento</p>
+        <article class="tusEventos"></article>
+        <article class="chats">
+            <section class="amigos">
+                <div class="nuevoAmigo">
+                    <p class="agregarAmigoP boton">Agregar amigo</p>
+                    <p class="agregarAmigoResultado" style="display: none;" >Chat creado correctamente</p>
+                    <div class="agregarAmigoDIV" style="display: none;">
+                        <label for="hashAmigo">Nombre y hash:</label>
+                        <input type="text" id="hashAmigo" name="hashAmigo" placeholder="Nombre#0000">
+                        <p class="agregarAmigo boton" style="margin: 0;">Agregar</p>
+                    </div>
+                </div>
+                <div>
+
+                </div>
             </section>
-            <section class="evento" id="evento0">
-                <img class="imgEventoPequeno" src="img/index/barbacoa.jpg">
-                <p>evento1</p>
-            </section>
-            <section class="evento" id="evento1">
-                <img class="imgEventoPequeno">
-                <p>evento2</p>
+            <section class="texto">
+
             </section>
         </article>
-        <article class="chats"></article>
         <article class="eventosPublicos"></article>
-        <article class="calendario"></article>
+        <article class="foros"></article>
     </main>
     @include('components.footer')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

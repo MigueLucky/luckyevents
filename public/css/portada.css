@@ -115,14 +115,6 @@ main {
     cursor: pointer;
 }
 
-#evento0{
-    background-color: red;
-}
-
-#evento1{
-    background-color: yellow;
-}
-
 .imgEventoPequeno {
     min-width: 50px;
     min-height: 50px;
@@ -137,6 +129,14 @@ main {
     background-color: #79AC78;
     grid-row: 1 / 3;
     margin: 10px;
+    padding: 10px;
+}
+
+.amigos {
+    width: 25%;
+    overflow-y: auto;
+    max-height: 800px;
+    
 }
 
 .eventosPublicos {
@@ -144,7 +144,7 @@ main {
     margin: 10px;
 }
 
-.calendario {
+.foros {
     background-color: #79AC78;
     margin: 10px;
 }
