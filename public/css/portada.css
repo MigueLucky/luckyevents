@@ -87,7 +87,7 @@ main {
     flex-direction: column;
     padding: 5px;
     overflow-y: auto;
-    max-height: 800px;
+    max-height: 760px;
 }
 
 .crearEvento {
@@ -115,7 +115,8 @@ main {
     cursor: pointer;
 }
 
-.imgEventoPequeno {
+.imgEventoPequeno , 
+.imgAmigoPequeno{
     min-width: 50px;
     min-height: 50px;
     max-width: 50px;
@@ -135,8 +136,29 @@ main {
 .amigos {
     width: 25%;
     overflow-y: auto;
-    max-height: 800px;
-    
+    height: 760px;
+    border-right: 3px solid #D0E7D2;
+}
+
+.listaAmigos{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.amigo{
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    align-items: center;
+    min-height: 50px;
+    margin: 2px;
+    background-color: #618264;
+    border-radius: 25px;
+}
+
+#hashAmigo {
+    width: 80%;
 }
 
 .eventosPublicos {

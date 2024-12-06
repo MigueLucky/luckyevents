@@ -28,6 +28,15 @@ class MensajesTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'id_usuario' => 1,
+                'id_usuario2' => 2,
+                'id_evento' => null,
+                'id_foro' => null,
+                'contenido' => 'Ahora somos amigos',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

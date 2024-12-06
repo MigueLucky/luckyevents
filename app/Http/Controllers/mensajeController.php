@@ -36,4 +36,17 @@ class MensajeController extends Controller
         $mensaje->delete();
         return response()->json(['message' => 'Deleted successfully']);
     }
+
+    public function amigosPorUsuario(Request $request)
+    {
+        $idUsuario = $request->input('idUsuario');
+
+        $amigos = Mensaje::where('id_usuario', $idUsuario)
+            ->join('users', 'mensajes.id_usuario2', '=', 'users.id')
+            ->select('users.id', 'users.nombre', 'users.foto')
+            ->distinct()
+            ->get();
+
+        return response()->json($amigos);
+    }
 }

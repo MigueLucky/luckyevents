@@ -30,14 +30,14 @@ $(function () {
                 let eventos = await response.json();
 
                 eventos.forEach(evento => {
-                    if(hoy.toISOString() < evento.fechaHoraFin){
+                    if (hoy.toISOString() < evento.fechaHoraFin) {
                         let eventoHtml = `
                         <section class="evento" id="evento${evento.id}" style="background-color:${evento.color};">
                             <img class="imgEventoPequeno" src="${evento.foto}">
                             <p>${evento.nombre}</p>
                         </section>
                     `;
-                    $(".tusEventos").append(eventoHtml);
+                        $(".tusEventos").append(eventoHtml);
                     }
                 });
             } else {
@@ -254,9 +254,51 @@ $(function () {
 
     $(".agregarAmigo").on("click", function () {
         $(".agregarAmigoDIV").hide();
-        $(".agregarAmigoConfirmacion").show();
+        $(".agregarAmigoResultado").show();
         setTimeout(function () {
-            $(".agregarAmigoConfirmacion").hide();
-        }, 5000);
+            $(".agregarAmigoResultado").hide();
+        }, 3000);
     })
+
+    async function amigosPorUsuario() {
+        try {
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+            let response = await fetch("/amigosPorUsuario", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken
+                },
+                body: JSON.stringify({
+                    idUsuario: idUsuario
+                }),
+            });
+    
+            if (response.ok) {
+                let amigos = await response.json();
+    
+                if (amigos.length > 0) {
+                    $(".listaAmigos").empty();
+                    amigos.forEach(amigo => {
+                        let amigoHtml = `
+                            <section class="amigo" id="amigo${amigo.id}">
+                                <img class="imgAmigoPequeno" src="${amigo.foto}">
+                                <p>${amigo.nombre}</p>
+                            </section>
+                        `;
+                        $(".listaAmigos").append(amigoHtml);
+                        $(".listaAmigos").append(amigoHtml);
+                    });
+                } else {
+                    $(".listaAmigos").html("<p>Envia un mensaje a un amigo</p>");
+                }
+            } else {
+                $(".listaAmigos").html("<p>No se pudieron cargar tus amigos.</p>");
+            }
+        } catch (error) {
+            $(".listaAmigos").html("<p>Hubo un error en la comunicación con el servidor.</p>");
+        }
+    }
+    amigosPorUsuario()
 });

@@ -33,13 +33,12 @@
                     <p class="agregarAmigoP boton">Agregar amigo</p>
                     <p class="agregarAmigoResultado" style="display: none;" >Chat creado correctamente</p>
                     <div class="agregarAmigoDIV" style="display: none;">
-                        <label for="hashAmigo">Nombre y hash:</label>
-                        <input type="text" id="hashAmigo" name="hashAmigo" placeholder="Nombre#0000">
+                        <label for="hashAmigo">Id de tu amigo:</label>
+                        <input type="text" id="hashAmigo" name="hashAmigo" placeholder="#0000">
                         <p class="agregarAmigo boton" style="margin: 0;">Agregar</p>
                     </div>
                 </div>
-                <div>
-
+                <div class="listaAmigos">
                 </div>
             </section>
             <section class="texto">

@@ -1,14 +1,26 @@
 $(function () {
     if (localStorage.length > 0) {
+        let user = localStorage.getItem('user');
+        let userObject = JSON.parse(user);
+
         if (window.location.href.includes('portada')) {
             $(".imgUsu").show();
             $(".volverPortada").show();
             $(".volverPortada").html("");
+
+            if(userObject.admin){
+                $(".volverPortada").text("Zona de administracion");
+            }
+            $(".volverPortada").css({ "cursor": "pointer" })
+
+            $(".volverPortada").off().on("click", function () {
+                window.location.href = '/admin';
+            })
         } else {
             $(".imgUsu").show();
             $(".volverPortada").show();
 
-            $(".volverPortada").on("click", function () {
+            $(".volverPortada").off().on("click", function () {
                 window.location.href = '/portada';
             })
 
@@ -19,13 +31,6 @@ $(function () {
             window.location.href = '/portada';
         })
         $("h1").css({ "cursor": "pointer" })
-
-        let user = localStorage.getItem('user');
-        let userObject = JSON.parse(user);
-
-        $(".imgUsu").css({
-           
-        });
 
         $(".imgUsu img").attr("src", userObject.foto);
         $(".imgUsu img").css({

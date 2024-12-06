@@ -57,6 +57,19 @@ Route::get('/listaForos', function () {
     return view('listaForos');
 });
 
+Route::get('/admin', function () {
+    if (!Auth::check()) {
+        return redirect('/');
+    }
+
+    $user = Auth::user();
+    if(!$user->admin){
+        return redirect('/portada');
+    }
+
+    return view('admin');
+});
+
 Route::get('/listaEventos', function () {
     if (!Auth::check()) {
         return redirect('/');
@@ -71,6 +84,7 @@ Route::get('/terminos', function () {
 
 Route::resource('users', UserController::class);
 Route::post('/eventosPorUsuario', [EventoController::class, 'eventosPorUsuario']);
+Route::post('/amigosPorUsuario', [mensajeController::class, 'amigosPorUsuario']);
 Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/login', [UserController::class, 'login']);
 Route::resource('eventos', eventoController::class);

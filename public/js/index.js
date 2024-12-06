@@ -1,4 +1,6 @@
 $(function () {
+    $(".volverPortada").html("");
+    $(".imgUsu").html("");
     const nombresImagenes = [
         "barbacoa.jpg",
         "cumpleanos.jpg",
