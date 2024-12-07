@@ -288,7 +288,6 @@ $(function () {
                             </section>
                         `;
                         $(".listaAmigos").append(amigoHtml);
-                        $(".listaAmigos").append(amigoHtml);
                     });
                 } else {
                     $(".listaAmigos").html("<p>Envia un mensaje a un amigo</p>");
