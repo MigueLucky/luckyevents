@@ -22,6 +22,12 @@ class Usuario_eventosTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'id_usuario' => 1,
+                'id_evento' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

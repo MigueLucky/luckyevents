@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('vehiculos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_usuario');
-            $table->foreign('id_usuario')->references('id')->on('users')->onDelete('cascade');
             $table->string('nombre');
             $table->integer('capacidad');
             $table->string('foto')->nullable();
             $table->json('ocupantes')->nullable();
+
+            $table->foreign('id_usuario')->references('id')->on('users')->onDelete('cascade');
+        
             $table->timestamps();
         });
     }

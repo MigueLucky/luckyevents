@@ -152,7 +152,7 @@ $(function () {
         async function guardarYSalir() {
             let nombre = $("#nombreEvento").val();
             let descripcion = $("#descripcionEvento").val();
-            let privacidadEvento = $("#privacidadEvento").val();
+            let privacidadEvento = $("#privacidadEvento").prop('checked');
             let colorEvento = $("#colorEvento").val();
             let fechaHoraInicio = $("#inicioEvento").val();
             let ubicacionEvento = $("#ubicacionEvento").val();
@@ -161,12 +161,17 @@ $(function () {
 
             let textoError = "Los siguientes apartados son obligatorios: ";
 
-            if (!nombre || !fechaHoraInicio || !fechaHoraFin || hoy.toISOString() > fechaHoraInicio || fechaHoraInicio > fechaHoraFin) {
+            if (!nombre || !fechaHoraInicio || !fechaHoraFin) {
                 if (!nombre) textoError += "nombre del evento ";
                 if (!fechaHoraInicio) textoError += "cuando inicia el evento ";
                 if (!fechaHoraFin) textoError += "cuando acaba el evento ";
+
+                $(".mensajeError2").text(textoError);
+                $('#detrasSalirSinGuardar').css('visibility', 'hidden');
+            } else if (hoy.toISOString() > fechaHoraInicio || fechaHoraInicio > fechaHoraFin) {
                 if (hoy.toISOString() > fechaHoraInicio) textoError = "La fecha de inicio no puede estar en el pasado";
                 if (fechaHoraInicio > fechaHoraFin) textoError = "El evento no puede acabar antes de empezar";
+
                 $(".mensajeError2").text(textoError);
                 $('#detrasSalirSinGuardar').css('visibility', 'hidden');
             } else {
@@ -263,7 +268,7 @@ $(function () {
     async function amigosPorUsuario() {
         try {
             let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    
+
             let response = await fetch("/amigosPorUsuario", {
                 method: "POST",
                 headers: {
@@ -274,10 +279,10 @@ $(function () {
                     idUsuario: idUsuario
                 }),
             });
-    
+
             if (response.ok) {
                 let amigos = await response.json();
-    
+
                 if (amigos.length > 0) {
                     $(".listaAmigos").empty();
                     amigos.forEach(amigo => {

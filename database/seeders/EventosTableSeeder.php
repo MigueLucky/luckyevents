@@ -46,6 +46,24 @@ class EventosTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'nombre' => 'evento3',
+                'privacidad' => false,
+                'fechaHoraInicio' => now(),
+                'fechaHoraFin' => now()->subYear(),
+                'foto' => 'img/index/deportes.jpg',
+                'descripcion' => 'evento3descripcion',
+                'ubicacion' => 'valencia',
+                'color' => '#00ff00',
+                'links' => json_encode([
+                    ['nombre' => 'hola3', 'link' => 'https://hola3.com'],
+                    ['nombre' => 'hola4', 'link' => 'https://hola4.com']
+                ]),
+                'report' => false,
+                'razonReport' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }
