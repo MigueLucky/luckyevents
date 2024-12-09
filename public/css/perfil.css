@@ -62,6 +62,8 @@ article {
     height: 100vh;
     background: rgba(0, 0, 0, 0.8);
     z-index: 10;
+    margin: 0;
+    padding: 0;
 }
 
 #detrasSalirSinGuardar {

@@ -5,16 +5,15 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class VehiculosTableSeeder extends Seeder
+class Vehiculos_eventosTableSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('vehiculos')->insert([
+        DB::table('vehiculos_eventos')->insert([
             [
-                'id_usuario' => 1,
-                'nombre' => 'Toyota Corolla',
-                'capacidad' => 5,
-                'foto' => 'img/vehiculos/toyota_corolla.jpg',
+                'id_vehiculo' => 1,
+                'id_evento' => 1,
+                'ocupantes' => json_encode([1, 2]),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

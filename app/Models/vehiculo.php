@@ -6,11 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class vehiculo extends Model
 {
-    protected $fillable = ['id_usuario', 'nombre', 'capacidad', 'foto', 'ocupantes'];
-
-    protected $casts = [
-        'ocupantes' => 'array',
-    ];
+    protected $fillable = ['id_usuario', 'nombre', 'capacidad', 'foto'];
 
     public function usuario()
     {

@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->integer('capacidad');
             $table->string('foto')->nullable();
-            $table->json('ocupantes')->nullable();
-
+            
             $table->foreign('id_usuario')->references('id')->on('users')->onDelete('cascade');
         
             $table->timestamps();

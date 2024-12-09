@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             Usuario_eventosTableSeeder::class,
             Usuario_forosTableSeeder::class,
             VehiculosTableSeeder::class,
+            Vehiculos_eventosTableSeeder::class,
         ]);
     }
 }
