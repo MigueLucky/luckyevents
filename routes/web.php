@@ -85,7 +85,7 @@ Route::get('/terminos', function () {
 Route::resource('users', UserController::class);
 Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/login', [UserController::class, 'login']);
-Route::post('/cambiarContrasena', [UserController::class, 'cambiarContrasena']);
+Route::post('/cambiarContrasena/{id}', [UserController::class, 'cambiarContrasena']);
 
 Route::resource('eventos', eventoController::class);
 Route::post('/eventosPorUsuario', [EventoController::class, 'eventosPorUsuario']);

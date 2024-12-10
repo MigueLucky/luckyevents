@@ -62,7 +62,7 @@
                             <label for="nuevaContra">Nueva contraseña:</label>
                             <input type="password" id="nuevaContra" name="nuevaContra" placeholder="Nueva contraseña">
                         </div>
-                        <p class="boton">Actualizar</p>
+                        <p class="boton btnActuContra">Actualizar</p>
                     </div>
                 </div>
                 <div>

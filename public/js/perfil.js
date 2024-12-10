@@ -42,6 +42,24 @@ $(function () {
         $(".mostrarActuContra").toggle();
     })
 
+    $("html").on("click", ".btnActuContra", function () {
+        let antContra = $("#antiguaContra").val();
+        let nueContra = $("#nuevaContra").val();
+
+        let textoError = "Por favor coloca los siguientes apartados: ";
+        if (!antContra || !nueContra) {
+            if (!antContra) {
+                textoError += "la antigua contraseña ";
+            }
+            if (!nueContra) {
+                textoError += "la nueva contraseña";
+            }
+            $(".respuestaContra").text(textoError);
+        } else {
+            actualizarContrasena();
+        }
+    });
+
     $("html").on("click", ".actuDatos", function () {
         let nombre = $("#usuNombre").val();
         let email = $("#usuEmail").val();
@@ -60,13 +78,35 @@ $(function () {
         }
     });
 
-    async function actualizarContrasena(antiguaContra, nuevaContra) {
+    async function actualizarContrasena() {
+        let antiguaContra = $("#antiguaContra").val();
+        let nuevaContra = $("#nuevaContra").val();
 
+
+        let formData = new FormData();
+        formData.append("antiguaContra", antiguaContra);
+        formData.append("nuevaContra", nuevaContra);
+
+        try {
+            let response = await fetch(`/cambiarContrasena/${idUsuario}`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                },
+            });
+    
+            if (response.ok) {
+                $(".respuestaContra").text("La contraseña fue actualizada");
+            } else {
+                $(".respuestaContra").text("La contraseña actual es incorrecta");
+            }
+        } catch (error) {
+            $(".respuestaContra").text("Hubo un error con el servidor, intentalo mas tarde");
+        }
     }
 
     async function actualizarDatos() {
-        idUsuario = usuario.id;
-
         let nombre = $("#usuNombre").val();
         let apellido = $("#usuApellido").val();
         let leyenda = $("#usuLeyenda").val();

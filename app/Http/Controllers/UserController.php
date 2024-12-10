@@ -77,19 +77,16 @@ class UserController extends Controller
         'nombre' => 'required|string|max:255',
         'apellido' => 'nullable|string|max:255',
         'leyenda' => 'nullable|string|max:255',
-        'email' => 'required|email|max:255|unique:users,email,' . $id,
+        'email' => 'required|string|max:255',
         'ubicacion' => 'nullable|string|max:255',
-        'foto' => 'nullable|image',
+        'foto' => 'nullable',
     ]);
 
     if ($request->hasFile('foto')) {
-        Log::info('Archivo recibido:', ['file' => $request->file('foto')->getClientOriginalName()]);
         $data['foto'] = $request->file('foto')->store('avatares', 'public');
     }
 
     $user->update($data);
-
-    Log::info('Usuario actualizado con éxito:', $user->toArray());
 
     return response()->json($user);
 }
@@ -99,17 +96,15 @@ public function cambiarContrasena(Request $request, $id)
 {
     $user = User::findOrFail($id);
 
-    // Validar contraseñas
     $data = $request->validate([
         'antiguaContra' => 'required',
-        'nuevaContra' => 'required|min:8',
+        'nuevaContra' => 'required',
     ]);
 
     if (!Hash::check($data['antiguaContra'], $user->password)) {
         return response()->json(['error' => 'La contraseña actual es incorrecta.'], 400);
     }
 
-    // Actualizar contraseña
     $user->password = Hash::make($data['nuevaContra']);
     $user->save();
 
