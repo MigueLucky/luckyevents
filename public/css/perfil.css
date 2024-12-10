@@ -16,7 +16,32 @@ article {
     justify-content: center;
 }
 
-.datosUsu {}
+.datosUsu {
+    display: flex;
+    flex-direction: column;
+}
+
+.datosUsu > h2 {
+    text-align: center;
+    margin-bottom: 10%;
+}
+
+.editable {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.editable > div{
+    width: 33%;
+    overflow: hidden;
+    height: 33%;
+}
+
+#UsuPreview {
+    display: flex;
+    justify-content: center;
+}
 
 .historialEventos {
     display: flex;

@@ -83,11 +83,16 @@ Route::get('/terminos', function () {
 })->name('terminos');
 
 Route::resource('users', UserController::class);
-Route::post('/eventosPorUsuario', [EventoController::class, 'eventosPorUsuario']);
-Route::post('/amigosPorUsuario', [mensajeController::class, 'amigosPorUsuario']);
 Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/login', [UserController::class, 'login']);
+Route::post('/cambiarContrasena', [UserController::class, 'cambiarContrasena']);
+
 Route::resource('eventos', eventoController::class);
+Route::post('/eventosPorUsuario', [EventoController::class, 'eventosPorUsuario']);
+
 Route::resource('foros', foroController::class);
+
 Route::resource('mensajes', mensajeController::class);
+Route::post('/amigosPorUsuario', [mensajeController::class, 'amigosPorUsuario']);
+
 Route::resource('vehiculos', vehiculoController::class);

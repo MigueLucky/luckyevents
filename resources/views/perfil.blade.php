@@ -29,10 +29,60 @@
         <article class="vehiculos">
             <h2>Vehiculos</h2>
         </article>
-        <article class="datosUsu"></article>
+        <article class="datosUsu">
+            <h2></h2>
+            <section class="editable">
+                <div>
+                    <label for="usuNombre">Nombre:</label>
+                    <input type="text" id="usuNombre" name="usuNombre" placeholder="Nombre">
+                </div>
+                <div>
+                    <label for="usuApellido">Apellido:</label>
+                    <input type="text" id="usuApellido" name="usuApellido" placeholder="Apellido">
+                </div>
+                <div>
+                    <label for="usuLeyenda">Leyenda:</label>
+                    <input type="text" id="usuLeyenda" name="usuLeyenda" placeholder="Leyenda">
+                </div>
+                <div>
+                    <label for="usuEmail">Email:</label>
+                    <input type="text" id="usuEmail" name="usuEmail" placeholder="Email">
+                </div>
+                <div>
+                    <p class="actuContra boton">Actualizar contraseña</p>
+                    <p class="respuestaContra"></p>
+                </div>
+                <div>
+                    <div class="mostrarActuContra" style="display: none;">
+                        <div>
+                            <label for="antiguaContra">Antigua contraseña:</label>
+                            <input type="password" id="antiguaContra" name="antiguaContra" placeholder="Antigua contraseña">
+                        </div>
+                        <div>
+                            <label for="nuevaContra">Nueva contraseña:</label>
+                            <input type="password" id="nuevaContra" name="nuevaContra" placeholder="Nueva contraseña">
+                        </div>
+                        <p class="boton">Actualizar</p>
+                    </div>
+                </div>
+                <div>
+                    <label for="usuFoto">Foto:</label>
+                    <input type="file" id="usuFoto" accept="image/*">
+                    <div id="UsuPreview"></div>
+                </div>
+                <div>
+                    <label for="usuUbicacion">Ubicacion favorita:</label>
+                    <input type="text" id="usuUbicacion" name="usuUbicacion" placeholder="Ubicacion">
+                </div>
+                <div>
+                    <p class="actuDatos boton">Actualizar datos</p>
+                    <p class="respuestaActuDatos"></p>
+                </div>
+            </section>
+        </article>
         <article class="historialEventos">
             <h2>Historial de tus eventos</h2>
-            <p class="mensajeError2"></p>
+            <p class="mensajeError3"></p>
             <section class="historial"></section>
         </article>
     </main>

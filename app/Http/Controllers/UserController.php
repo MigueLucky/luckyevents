@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -65,11 +67,54 @@ class UserController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-        $user->update($request->all());
-        return response()->json($user);
+{
+    Log::info('Datos recibidos:', $request->all());
+
+    $user = User::findOrFail($id);
+    Log::info('Usuario encontrado:', ['id' => $user->id]);
+
+    $data = $request->validate([
+        'nombre' => 'required|string|max:255',
+        'apellido' => 'nullable|string|max:255',
+        'leyenda' => 'nullable|string|max:255',
+        'email' => 'required|email|max:255|unique:users,email,' . $id,
+        'ubicacion' => 'nullable|string|max:255',
+        'foto' => 'nullable|image',
+    ]);
+
+    if ($request->hasFile('foto')) {
+        Log::info('Archivo recibido:', ['file' => $request->file('foto')->getClientOriginalName()]);
+        $data['foto'] = $request->file('foto')->store('avatares', 'public');
     }
+
+    $user->update($data);
+
+    Log::info('Usuario actualizado con éxito:', $user->toArray());
+
+    return response()->json($user);
+}
+
+
+public function cambiarContrasena(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+
+    // Validar contraseñas
+    $data = $request->validate([
+        'antiguaContra' => 'required',
+        'nuevaContra' => 'required|min:8',
+    ]);
+
+    if (!Hash::check($data['antiguaContra'], $user->password)) {
+        return response()->json(['error' => 'La contraseña actual es incorrecta.'], 400);
+    }
+
+    // Actualizar contraseña
+    $user->password = Hash::make($data['nuevaContra']);
+    $user->save();
+
+    return response()->json(['message' => 'Contraseña actualizada correctamente.']);
+}
 
     public function destroy($id)
     {
