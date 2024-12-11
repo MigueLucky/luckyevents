@@ -258,7 +258,6 @@ $(function () {
 
             if (response.ok) {
                 evento = await response.json();
-                console.log(evento);
                 
                 $(".contenido").css("background-color", evento.color);
     
@@ -282,7 +281,14 @@ $(function () {
                         </section>
                         <section class="eventoVehiculos"></section>
                         <section class="eventoChat"></section>
-                        <section class="eventoLinks"></section>
+                        <section class="eventoLinks">
+                            ${evento.links && evento.links.length > 0 ? evento.links.map(link => `
+                                    <div class="eventoLink">
+                                        <a href="${link.link}" target="_blank">${link.nombre}</a>
+                                    </div>
+                                `).join('') : '<p>No hay ningún enlace externo</p>'
+                            }
+                        </section>
                         <section class="eventoListaUsu"></section>
                         <div class="xIcon EventoXIcon">&#10006;</div>
                     </div>

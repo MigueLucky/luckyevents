@@ -164,6 +164,8 @@ main {
 }
 
 .eventoLinks {
+    overflow: auto;
+    padding: 5px;
     grid-column: 3 / 4;
     grid-row: 2 / 3;
 }
