@@ -157,7 +157,12 @@ $(function () {
             let fechaHoraInicio = $("#inicioEvento").val();
             let ubicacionEvento = $("#ubicacionEvento").val();
             let fechaHoraFin = $("#finEvento").val();
-            let fotoEvento = $("#fotoEvento")[0].files[0];
+            let fotoEvento;
+            if ($("#fotoEvento")[0].files[0] === undefined || $("#fotoEvento")[0].files[0] === null) {
+                fotoEvento = "/img/default/eventoDefault.png";
+            } else {
+                fotoEvento = $("#fotoEvento")[0].files[0];
+            }
 
             let textoError = "Los siguientes apartados son obligatorios: ";
 
@@ -236,20 +241,64 @@ $(function () {
         });
     });
 
-    //Mostrar eventos
-    $("html").on("click", ".evento", function () {
-        $('.detrasContenido').css('visibility', 'visible');
-        $('.contenido').html(`
-            <div class="tituloContenido">
-                <h2>${$(this).attr('id')}</h2>
-                <div class="xIcon">&#10006;</div>
-            </div> 
-        `);
 
-        $(".xIcon").off().on("click", function () {
-            $('.detrasContenido').css('visibility', 'hidden');
-            $('.contenido').html("");
-        });
+
+    //Mostrar eventos
+    $("html").on("click", ".evento", async function () {
+        let idEvento = $(this).attr("id").replace("evento", "");
+        let evento;
+
+        try {
+            let response = await fetch(`/eventos/${idEvento}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                evento = await response.json();
+                console.log(evento);
+                
+                $(".contenido").css("background-color", evento.color);
+    
+                $('.detrasContenido').css('visibility', 'visible');
+                $('.contenido').html(`
+                    <div class="contenidoEvento">
+                        <section class="eventoInfoGeneral">
+                            <img src="${evento.foto}">
+                            <div>
+                                <div>
+                                    <h2>${evento.nombre}</h2>
+                                    ${evento.descripcion ? `<p>${evento.descripcion}</p>` : ''}
+                                </div>
+                                <div>
+                                    <p>El evento empieza el ${new Date(evento.fechaHoraInicio).toLocaleString()} y acaba el ${new Date(evento.fechaHoraFin).toLocaleString()}</p>
+                                </div>
+                                <div>
+                                    <p>${evento.privacidad ? "Evento privado" : "Evento público"}${evento.ubicacion ? ` en ${evento.ubicacion}` : ''}</p>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="eventoVehiculos"></section>
+                        <section class="eventoChat"></section>
+                        <section class="eventoLinks"></section>
+                        <section class="eventoListaUsu"></section>
+                        <div class="xIcon EventoXIcon">&#10006;</div>
+                    </div>
+                `);
+
+                $(".xIcon").off().on("click", function () {
+                    $('.detrasContenido').css('visibility', 'hidden');
+                    $('.contenido').html("");
+                    $(".contenido").css("background-color", "#D0E7D2")
+                });
+            } else {
+                console.error("Error al obtener el evento:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Hubo un error al comunicarse con el servidor:", error);
+        }
     });
 
     //CHATS

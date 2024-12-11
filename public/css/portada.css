@@ -115,8 +115,71 @@ main {
     cursor: pointer;
 }
 
-.imgEventoPequeno , 
-.imgAmigoPequeno{
+.contenidoEvento {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: 2fr 3fr 3fr;
+}
+
+.contenidoEvento section {
+    background-color: #79AC78;
+    margin: 5px;
+}
+
+.eventoInfoGeneral {
+    grid-column: 1 / 4;
+    grid-row: 1 / 2;
+    display: flex;
+}
+
+.eventoInfoGeneral img {
+    min-width: 100px;
+    min-height: 100px;
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
+
+.eventoInfoGeneral div >div {
+    margin: 10px;
+}
+
+.eventoInfoGeneral div div:nth-of-type(1) {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0;
+}
+
+.eventoVehiculos {
+    grid-column: 1 / 2;
+    grid-row: 2 / 4;
+}
+
+.eventoChat {
+    grid-column: 2 / 3;
+    grid-row: 2 / 4;
+}
+
+.eventoLinks {
+    grid-column: 3 / 4;
+    grid-row: 2 / 3;
+}
+
+.eventoListaUsu {
+    grid-column: 3 / 4;
+    grid-row: 3 / 4;
+}
+
+.EventoXIcon {
+    position: absolute;
+    right: 30px;
+}
+
+.imgEventoPequeno,
+.imgAmigoPequeno {
     min-width: 50px;
     min-height: 50px;
     max-width: 50px;
@@ -140,13 +203,13 @@ main {
     border-right: 3px solid #D0E7D2;
 }
 
-.listaAmigos{
+.listaAmigos {
     margin-top: 10px;
     display: flex;
     flex-direction: column;
 }
 
-.amigo{
+.amigo {
     display: flex;
     flex-direction: row;
     overflow: hidden;
