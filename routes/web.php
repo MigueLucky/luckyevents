@@ -83,6 +83,7 @@ Route::get('/terminos', function () {
 })->name('terminos');
 
 Route::resource('users', UserController::class);
+Route::post('/update/{id}', [UserController::class, 'update']);
 Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/cambiarContrasena/{id}', [UserController::class, 'cambiarContrasena']);
@@ -96,3 +97,4 @@ Route::resource('mensajes', mensajeController::class);
 Route::post('/amigosPorUsuario', [mensajeController::class, 'amigosPorUsuario']);
 
 Route::resource('vehiculos', vehiculoController::class);
+Route::post('/vehiculosPorUsuario', [vehiculoController::class, 'vehiculosPorUsuario']);

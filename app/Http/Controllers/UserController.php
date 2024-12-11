@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -67,49 +66,49 @@ class UserController extends Controller
     }
 
     public function update(Request $request, $id)
-{
-    Log::info('Datos recibidos:', $request->all());
+    {
+        $user = User::findOrFail($id);
 
-    $user = User::findOrFail($id);
-    Log::info('Usuario encontrado:', ['id' => $user->id]);
+        $data = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'nullable|string|max:255',
+            'leyenda' => 'nullable|string|max:255',
+            'email' => 'required|string|max:255',
+            'ubicacionFavorita' => 'nullable|string|max:255',
+            'foto' => 'nullable',
+        ]);
 
-    $data = $request->validate([
-        'nombre' => 'required|string|max:255',
-        'apellido' => 'nullable|string|max:255',
-        'leyenda' => 'nullable|string|max:255',
-        'email' => 'required|string|max:255',
-        'ubicacion' => 'nullable|string|max:255',
-        'foto' => 'nullable',
-    ]);
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('avatares', 'public');
+            $data['foto'] = "storage/" . $data['foto'];
+        } else {
+            $data['foto'] = $user->foto;
+        }
 
-    if ($request->hasFile('foto')) {
-        $data['foto'] = $request->file('foto')->store('avatares', 'public');
+        $user->update($data);
+
+        return response()->json($user);
     }
 
-    $user->update($data);
 
-    return response()->json($user);
-}
+    public function cambiarContrasena(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
 
+        $data = $request->validate([
+            'antiguaContra' => 'required',
+            'nuevaContra' => 'required',
+        ]);
 
-public function cambiarContrasena(Request $request, $id)
-{
-    $user = User::findOrFail($id);
+        if (!Hash::check($data['antiguaContra'], $user->password)) {
+            return response()->json(['error' => 'La contraseña actual es incorrecta.'], 400);
+        }
 
-    $data = $request->validate([
-        'antiguaContra' => 'required',
-        'nuevaContra' => 'required',
-    ]);
+        $user->password = Hash::make($data['nuevaContra']);
+        $user->save();
 
-    if (!Hash::check($data['antiguaContra'], $user->password)) {
-        return response()->json(['error' => 'La contraseña actual es incorrecta.'], 400);
+        return response()->json(['message' => 'Contraseña actualizada correctamente.']);
     }
-
-    $user->password = Hash::make($data['nuevaContra']);
-    $user->save();
-
-    return response()->json(['message' => 'Contraseña actualizada correctamente.']);
-}
 
     public function destroy($id)
     {

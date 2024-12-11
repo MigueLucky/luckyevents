@@ -28,6 +28,27 @@
         </article>
         <article class="vehiculos">
             <h2>Vehiculos</h2>
+            <section class="crearVehiculo">
+                <p class="boton anadirVehiculo">Añadir vehiculo</p>
+                <div>
+                    <div>
+                        <label for="vehiculoNombre">Nombre:</label>
+                        <input type="text" id="vehiculoNombre" name="vehiculoNombre" placeholder="Nombre del vehiculo">
+                    </div>
+                    <div>
+                        <label for="vehiculoCapacidad">Capacidad:</label>
+                        <input type="number" id="vehiculoCapacidad" name="vehiculoCapacidad" placeholder="Cantidad de asientos">
+                    </div>
+                    <div>
+                        <label for="vehiculoFoto">Foto:</label>
+                        <input type="file" id="vehiculoFoto" accept="image/*" style="width: 100%; margin: 0;">
+                        <div id="vehiculoPreview"></div>
+                    </div>
+                    <p class="boton btnVehiculo">Añadir</p>
+                </div>
+                <p class="respuestaVehiculo"></p>
+            </section>
+            <section class="listaVehiculo"></section>
         </article>
         <article class="datosUsu">
             <h2></h2>

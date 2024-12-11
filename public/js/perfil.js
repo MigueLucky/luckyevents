@@ -7,12 +7,162 @@ $(function () {
     let emailUsuario = usuario.email;
     let fotoUsuario = usuario.foto;
     let leyendaUsuario = usuario.leyenda;
-    let ubicacionfavoritaUsuario = usuario.ubicacionfavorita;
+    let ubicacionfavoritaUsuario = usuario.ubicacionFavorita;
 
     let tiempoTranscurrido = Date.now();
     let hoy = new Date(tiempoTranscurrido);
 
     //Vehiculos
+    async function vehiculosPorUsuario() {
+        $(".listaVehiculo").html("");
+        try {
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            let response = await fetch("/vehiculosPorUsuario", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken
+                },
+                body: JSON.stringify({
+                    idUsuario: idUsuario
+                }),
+            });
+
+            let semaforo = true;
+
+            if (response.ok) {
+                let vehiculos = await response.json();
+
+                vehiculos.forEach(vehiculo => {
+                    let vehiculoHtml = `
+                            <div class="vehiculo">
+                            <img class="imgVehiculoPequeno" src="${vehiculo.foto}">
+                            <div class="datosVehiculo">
+                                <p>${vehiculo.nombre}</p>
+                                <p>${vehiculo.capacidad} asientos</p>
+                            </div>
+                            <div class="xIcon eliminarVehiculo" id="${vehiculo.id}" style="margin-right: 15px;">&#10006;</div>
+                        </div>
+                    `;
+                    $(".listaVehiculo").append(vehiculoHtml);
+                    semaforo = false;
+                });
+            } else {
+                $(".vehiculos").append("<p>No se pudieron cargar los vehículos.</p>");
+            }
+
+            if (semaforo) {
+                $(".vehiculos").append("<p>No tienes vehículos registrados.</p>");
+            }
+        } catch (error) {
+            $(".vehiculos").append("<p>Hubo un error en la comunicación con el servidor.</p>");
+        }
+    }
+
+    vehiculosPorUsuario();
+
+    $("html").on("click", ".anadirVehiculo", function () {
+        $(".crearVehiculo > div").toggle();
+    })
+
+    async function crearVehiculo() {
+        let nombreVehiculo = $("#vehiculoNombre").val();
+        let capacidadVehiculo = $("#vehiculoCapacidad").val();
+        let foto;
+        if ($("#vehiculoFoto")[0].files[0] === undefined || $("#vehiculoFoto")[0].files[0] === null) {
+            foto = "img/default/vehiculoDefault.jpg";
+        } else {
+            foto = $("#vehiculoFoto")[0].files[0];
+        }
+
+        let formData = new FormData();
+
+        formData.append("nombre", nombreVehiculo);
+        formData.append("capacidad", capacidadVehiculo);
+        formData.append("idUsuario", idUsuario);
+        formData.append("foto", foto);
+
+        try {
+            let response = await fetch("/vehiculos", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                vehiculosPorUsuario();
+            } else {
+                console.error("Error al crear vehículo:", await response.text());
+                $(".respuestaVehiculo").text("No se puede crear el vehiculo");
+            }
+        } catch (error) {
+            console.error("Error en la petición:", error);
+            $(".respuestaVehiculo").text("Ocurrió un error al comunicarse con el servidor, intentalo mas tarde");
+        }
+    }
+
+    $("html").on("click", ".btnVehiculo", function () {
+        let nombreVehiculo = $("#vehiculoNombre").val();
+        let capacidadVehiculo = $("#vehiculoCapacidad").val();
+
+        let textoError = "Por favor coloca los siguientes apartados: ";
+        if (!nombreVehiculo || !capacidadVehiculo) {
+            if (!nombreVehiculo) {
+                textoError += "nombre ";
+            }
+            if (!capacidadVehiculo) {
+                textoError += "capacidad";
+            }
+            if(capacidadVehiculo <= 0){
+                textoError = "Minimo tiene que tener una plaza";
+            }
+            $(".respuestaVehiculo").text(textoError);
+        } else {
+            $(".crearVehiculo > div").hide();
+            $(".respuestaVehiculo").text("");
+            crearVehiculo()
+        }
+    })
+
+    $("#vehiculoFoto").on("change", function (e) {
+        let file = e.target.files[0];
+        let preview = $("#vehiculoPreview");
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.html(`<img src="${e.target.result}" style="max-width: 100px; max-height: 100px;">`);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.html("");
+        }
+    });
+
+    $("html").on("click", ".eliminarVehiculo", async function () {
+        let idVehiculo = $(this).attr("id");
+    
+        try {
+            let response = await fetch(`/vehiculos/${idVehiculo}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+    
+            if (response.ok) {
+                $(`#${idVehiculo}`).closest('.vehiculo').remove();
+            }
+        } catch (error) {
+            console.error("Hubo un error en la comunicación con el servidor:", error);
+        }
+    });
+    
+
     //DatosUsu
     $(".datosUsu > h2").text(nombreUsuario + "#" + idUsuario);
 
@@ -95,7 +245,7 @@ $(function () {
                     "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
                 },
             });
-    
+
             if (response.ok) {
                 $(".respuestaContra").text("La contraseña fue actualizada");
             } else {
@@ -124,12 +274,12 @@ $(function () {
         formData.append("apellido", apellido);
         formData.append("leyenda", leyenda);
         formData.append("email", email);
-        formData.append("ubicacion", ubicacion);
+        formData.append("ubicacionFavorita", ubicacion);
         formData.append("foto", foto);
 
         try {
-            let response = await fetch(`/users/${idUsuario}`, {
-                method: "PUT",
+            let response = await fetch(`/update/${idUsuario}`, {
+                method: "POST",
                 body: formData,
                 headers: {
                     "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
@@ -137,13 +287,11 @@ $(function () {
             });
 
             if (response.ok) {
-                $(".respuestaActuDatos").text("Datos actualizados correctamente.");
                 let result = await response.json();
-                //localStorage.clear();
-                //localStorage.setItem('user', JSON.stringify(result.user));
-                
-                console.log("Usuario actualizado:", result);
-                //location.reload();
+                localStorage.clear();
+                localStorage.setItem('user', JSON.stringify(result));
+
+                location.reload();
             } else {
                 $(".respuestaActuDatos").text("Error al actualizar datos.");
             }
@@ -430,7 +578,5 @@ $(function () {
                 }
             });
         });
-
-
     })
 })
