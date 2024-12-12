@@ -21,14 +21,6 @@ $(function () {
     $(".esquinaIzq > img").attr("src", `/img/index/${nombresImagenes[img1]}`);
     $(".esquinaDer > img").attr("src", `/img/index/${nombresImagenes[img2]}`);
 
-    $('main').on('mouseenter', '.recuContra', function () {
-        $(this).css("color", "#B0D9B1");
-    });
-
-    $('main').on('mouseleave', '.recuContra', function () {
-        $(this).css("color", "black");
-    });
-
     $('main').on('click', '.botonIni', function () {
         $("main").html("");
 
@@ -111,31 +103,6 @@ $(function () {
         posicionElementos()
     })
 
-    $('main').on('click', '.recuContra', function () {
-        $("main").html("");
-
-        $("main").append("<p>Introduce el correo electrónico para restablecer la contraseña:</p>");
-        $("main").append("<p class='volverAtras'>↩Volver atras</p>");
-        $("main").append("<input type='email' placeholder='Correo electrónico'>");
-        $("main").append("<p style='display: none; color: red;' class='mensajeCorreoError'>Por favor, introduce un correo electrónico válido.</p>");
-        $("main").append("<p class='boton botonRecuInput'>Enviar</p>")
-        $("main").append("<p style='display: none' class='mensajeCorreoBien'>Si el correo electrónico tiene una cuenta asociada, recibiras un email donde podras restablecer tu contraseña.</p>");
-
-        $(".botonRecuInput").off().on("click", function () {
-            let email = $("main input").val();
-
-            if (email) {
-                $(".mensajeCorreoError").hide();
-                $(".mensajeCorreoBien").show();
-            } else {
-                $(".mensajeCorreoBien").hide();
-                $(".mensajeCorreoError").show();
-            }
-        })
-
-        posicionElementos()
-    })
-
     async function iniciarsesion(email, contrasena) {
         try {
             let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -205,7 +172,6 @@ $(function () {
         $("main").append("<div/>");
         $("main div").append("<p class='boton botonIni'>Iniciar sesion</p>");
         $("main div").append('<p class="boton botonReg">Registrarse</p>');
-        $("main").append("<p class='recuContra'>¿Olvidaste tu contraseña?</p>");
 
         posicionElementos()
     })
@@ -222,11 +188,9 @@ $(function () {
         let altoMain = $('main').height();
         let anchoMain = $('main').width();
 
-        let anchoRecuContra = $("main > p:last-of-type").width();
-
         $("main").css("top", (altoBody / 2 - altoMain / 2));
         $("main").css("left", (anchoBody / 2 - anchoMain / 2));
-        $("main > p:last-of-type").css("left", (anchoMain / 2 - anchoRecuContra / 2))
+        $("main > p:last-of-type").css("left", (anchoMain / 2))
 
         $(".esquinaIzq div").css({
             "border-left": ((anchoBody / 2) + 10) + "px solid transparent",

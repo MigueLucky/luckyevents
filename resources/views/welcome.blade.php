@@ -22,7 +22,6 @@
             <p class="boton botonIni">Iniciar sesion</p>
             <p class="boton botonReg">Registrarse</p>
         </div>
-        <p class="recuContra">¿Olvidaste tu contraseña?</p>
     </main>
     <div class="esquinaDer">
         <img>
