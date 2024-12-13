@@ -90,6 +90,7 @@ Route::post('/cambiarContrasena/{id}', [UserController::class, 'cambiarContrasen
 
 Route::resource('eventos', eventoController::class);
 Route::post('/eventosPorUsuario', [EventoController::class, 'eventosPorUsuario']);
+Route::get('/usuariosPorEvento/{id}', [EventoController::class, 'usuariosPorEvento']);
 
 Route::resource('foros', foroController::class);
 

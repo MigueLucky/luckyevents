@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Vehiculo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class VehiculoController extends Controller
 {

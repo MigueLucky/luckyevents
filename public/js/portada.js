@@ -247,19 +247,49 @@ $(function () {
     $("html").on("click", ".evento", async function () {
         let idEvento = $(this).attr("id").replace("evento", "");
         let evento;
+        let participa = false;
 
         try {
-            let response = await fetch(`/eventos/${idEvento}`, {
+            let responseEvento = await fetch(`/eventos/${idEvento}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
                 }
             });
-
-            if (response.ok) {
-                evento = await response.json();
-                
+    
+            if (responseEvento.ok) {
+                evento = await responseEvento.json();
+    
                 $(".contenido").css("background-color", evento.color);
+    
+                let responseUsuarios = await fetch(`/usuariosPorEvento/${idEvento}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                let usuariosHTML = '';
+                if (responseUsuarios.ok) {
+                    let usuariosEvento = await responseUsuarios.json();
+                    if (usuariosEvento.length > 0) {
+                        usuariosEvento.forEach(usuarioEvento => {
+                            if(usuarioEvento.id === idUsuario){participa = true;}
+                            usuariosHTML += `
+                                <div class="usuario">
+                                    <img class="imgUsuario" src="${usuarioEvento.foto}">
+                                    <div>
+                                        <p>${usuarioEvento.nombre}${usuarioEvento.apellido ? ' ' + usuarioEvento.apellido : ''}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        usuariosHTML = '<p>No hay usuarios en este evento.</p>';
+                    }
+                } else {
+                    console.error("Error al obtener los usuarios:", responseUsuarios.statusText);
+                }
     
                 $('.detrasContenido').css('visibility', 'visible');
                 $('.contenido').html(`
@@ -272,14 +302,17 @@ $(function () {
                                     ${evento.descripcion ? `<p>${evento.descripcion}</p>` : ''}
                                 </div>
                                 <div>
-                                    <p>El evento empieza el ${new Date(evento.fechaHoraInicio).toLocaleString()} y acaba el ${new Date(evento.fechaHoraFin).toLocaleString()}</p>
+                                    <p>El evento empieza el ${new Date(evento.fechaHoraInicio).toLocaleString()}${evento.ubicacion ? ` en ${evento.ubicacion}` : ''} y acaba el ${new Date(evento.fechaHoraFin).toLocaleString()}</p>
                                 </div>
                                 <div>
-                                    <p>${evento.privacidad ? "Evento privado" : "Evento público"}${evento.ubicacion ? ` en ${evento.ubicacion}` : ''}</p>
+                                    <p>${evento.privacidad ? "Evento privado" : "Evento público"} y la id del evento es #${idEvento}</p>
                                 </div>
                             </div>
                         </section>
-                        <section class="eventoVehiculos"></section>
+                        <section class="eventoVehiculos">
+                            <p class="boton btnMisVehiculos">Mis vehiculos</p>
+                            <div class="listaVehiculos"></div>
+                        </section>
                         <section class="eventoChat"></section>
                         <section class="eventoLinks">
                             ${evento.links && evento.links.length > 0 ? evento.links.map(link => `
@@ -289,18 +322,23 @@ $(function () {
                                 `).join('') : '<p>No hay ningún enlace externo</p>'
                             }
                         </section>
-                        <section class="eventoListaUsu"></section>
-                        <div class="xIcon EventoXIcon">&#10006;</div>
+                        <section class="eventoListaUsu">
+                            ${usuariosHTML}
+                        </section>
+                        <div class="EventoXIcon">
+                            <p class="boton EntrarAbandonar">${participa ? "Abandonar" : "Participar"}</p>
+                            <div class="xIcon">&#10006;</div>
+                        </div>
                     </div>
                 `);
-
+    
                 $(".xIcon").off().on("click", function () {
                     $('.detrasContenido').css('visibility', 'hidden');
                     $('.contenido').html("");
                     $(".contenido").css("background-color", "#D0E7D2")
                 });
             } else {
-                console.error("Error al obtener el evento:", response.statusText);
+                console.error("Error al obtener el evento:", responseEvento.statusText);
             }
         } catch (error) {
             console.error("Hubo un error al comunicarse con el servidor:", error);

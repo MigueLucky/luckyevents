@@ -94,4 +94,20 @@ class EventoController extends Controller
 
         return response()->json($eventos);
     }
+
+    public function usuariosPorEvento($id)
+{
+    $evento = Evento::findOrFail($id);
+
+    $usuarios = $evento->usuarios()->get();
+
+    return response()->json($usuarios->map(function ($usuario) {
+        return [
+            'id' => $usuario->id,
+            'foto' => $usuario->foto,
+            'nombre' => $usuario->nombre,
+            'apellido' => $usuario->apellido,
+        ];
+    }));
+}
 }

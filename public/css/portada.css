@@ -173,15 +173,26 @@ main {
 .eventoListaUsu {
     grid-column: 3 / 4;
     grid-row: 3 / 4;
+    min-height: 225px;
+    max-height: 225px;
+    overflow: auto;
+}
+
+.usuario {
+    display: flex;
+    align-items: center;
+    margin: 5px;
 }
 
 .EventoXIcon {
     position: absolute;
-    right: 30px;
+    right: 45px;
+    display: flex;
 }
 
 .imgEventoPequeno,
-.imgAmigoPequeno {
+.imgAmigoPequeno,
+.imgUsuario {
     min-width: 50px;
     min-height: 50px;
     max-width: 50px;
