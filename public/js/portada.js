@@ -504,7 +504,9 @@ $(function () {
                 });
 
                 $(".xIcon").off().on("click", function () {
-                    $(".detrasContenido").css("visibility", "hidden");
+                    $('.detrasContenido').css('visibility', 'hidden');
+                    $('.contenido').html("");
+                    $(".contenido").css("background-color", "#D0E7D2");
                 });
 
             } else {
