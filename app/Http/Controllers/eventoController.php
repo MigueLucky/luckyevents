@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Evento;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EventoController extends Controller
 {
@@ -32,9 +33,9 @@ class EventoController extends Controller
         if ($request->hasFile('foto')) {
             $path = $request->file('foto')->store('eventos', 'public');
             $path = "storage/" . $path;
-        } else if($data['foto']){
+        } else if ($data['foto']) {
             $path = $data['foto'];
-        }else{
+        } else {
             $path = "/img/default/eventoDefault.png";
         }
 
@@ -96,18 +97,89 @@ class EventoController extends Controller
     }
 
     public function usuariosPorEvento($id)
-{
-    $evento = Evento::findOrFail($id);
+    {
+        $evento = Evento::findOrFail($id);
 
-    $usuarios = $evento->usuarios()->get();
+        $usuarios = $evento->usuarios()->get();
 
-    return response()->json($usuarios->map(function ($usuario) {
-        return [
-            'id' => $usuario->id,
-            'foto' => $usuario->foto,
-            'nombre' => $usuario->nombre,
-            'apellido' => $usuario->apellido,
-        ];
-    }));
-}
+        return response()->json($usuarios->map(function ($usuario) {
+            return [
+                'id' => $usuario->id,
+                'foto' => $usuario->foto,
+                'nombre' => $usuario->nombre,
+                'apellido' => $usuario->apellido,
+            ];
+        }));
+    }
+
+    public function vehiculosPorEvento($idEvento)
+    {
+        try {
+            $vehiculos = DB::table('vehiculos_eventos')
+                ->join('vehiculos', 'vehiculos_eventos.id_vehiculo', '=', 'vehiculos.id')
+                ->where('vehiculos_eventos.id_evento', $idEvento)
+                ->select('vehiculos.id', 'vehiculos.nombre', 'vehiculos.foto', 'vehiculos.capacidad')
+                ->get();
+
+            return response()->json($vehiculos, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener los vehículos del evento'], 500);
+        }
+    }
+    public function participarEvento($idEvento, Request $request)
+    {
+        try {
+            $idUsuario = $request->input('idUsuario');
+
+            $evento = DB::table('eventos')->where('id', $idEvento)->first();
+            if (!$evento) {
+                return response()->json(['error' => 'El evento no existe.'], 404);
+            }
+
+            $existe = DB::table('evento_usuario')
+                ->where('id_evento', $idEvento)
+                ->where('id_usuario', $idUsuario)
+                ->exists();
+
+            if ($existe) {
+                return response()->json(['message' => 'Ya estás participando en este evento.'], 200);
+            }
+
+            DB::table('evento_usuario')->insert([
+                'id_evento' => $idEvento,
+                'id_usuario' => $idUsuario,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            return response()->json(['message' => 'Te has unido al evento exitosamente.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Hubo un error al unirte al evento.'], 500);
+        }
+    }
+
+    public function abandonarEvento($idEvento, Request $request)
+    {
+        try {
+            $idUsuario = $request->input('idUsuario');
+
+            $evento = DB::table('eventos')->where('id', $idEvento)->first();
+            if (!$evento) {
+                return response()->json(['error' => 'El evento no existe.'], 404);
+            }
+
+            $deleted = DB::table('evento_usuario')
+                ->where('id_evento', $idEvento)
+                ->where('id_usuario', $idUsuario)
+                ->delete();
+
+            if ($deleted) {
+                return response()->json(['message' => 'Has abandonado el evento exitosamente.'], 200);
+            } else {
+                return response()->json(['message' => 'No estabas participando en este evento.'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Hubo un error al abandonar el evento.'], 500);
+        }
+    }
 }

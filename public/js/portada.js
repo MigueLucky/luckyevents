@@ -242,8 +242,7 @@ $(function () {
     });
 
 
-
-    //Mostrar eventos
+    // Mostrar evento
     $("html").on("click", ".evento", async function () {
         let idEvento = $(this).attr("id").replace("evento", "");
         let evento;
@@ -256,33 +255,36 @@ $(function () {
                     "Content-Type": "application/json"
                 }
             });
-    
+
             if (responseEvento.ok) {
                 evento = await responseEvento.json();
-    
+
                 $(".contenido").css("background-color", evento.color);
-    
+
+                // Obtener usuarios del evento
                 let responseUsuarios = await fetch(`/usuariosPorEvento/${idEvento}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                 });
-    
+
                 let usuariosHTML = '';
                 if (responseUsuarios.ok) {
                     let usuariosEvento = await responseUsuarios.json();
                     if (usuariosEvento.length > 0) {
                         usuariosEvento.forEach(usuarioEvento => {
-                            if(usuarioEvento.id === idUsuario){participa = true;}
+                            if (usuarioEvento.id === idUsuario) {
+                                participa = true;
+                            }
                             usuariosHTML += `
-                                <div class="usuario">
-                                    <img class="imgUsuario" src="${usuarioEvento.foto}">
-                                    <div>
-                                        <p>${usuarioEvento.nombre}${usuarioEvento.apellido ? ' ' + usuarioEvento.apellido : ''}</p>
-                                    </div>
-                                </div>
-                            `;
+                        <div class="usuario">
+                            <img class="imgUsuario" src="${usuarioEvento.foto}">
+                            <div>
+                                <p>${usuarioEvento.nombre}${usuarioEvento.apellido ? ' ' + usuarioEvento.apellido : ''}</p>
+                            </div>
+                        </div>
+                    `;
                         });
                     } else {
                         usuariosHTML = '<p>No hay usuarios en este evento.</p>';
@@ -290,60 +292,268 @@ $(function () {
                 } else {
                     console.error("Error al obtener los usuarios:", responseUsuarios.statusText);
                 }
-    
+
+                // Obtener vehículos del evento
+                let responseVehiculos = await fetch(`/vehiculosPorEvento/${idEvento}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                let vehiculosHTML = '';
+                if (responseVehiculos.ok) {
+                    let vehiculos = await responseVehiculos.json();
+                    if (vehiculos.length > 0) {
+                        for (let vehiculo of vehiculos) {
+                            vehiculosHTML += `
+                        <div class="vehiculo">
+                            <img class="imgVehiculoPequeno" src="${vehiculo.foto}">
+                            <div>
+                                <p>${vehiculo.nombre}</p>
+                                <p>${vehiculo.capacidad} asientos</p>
+                            </div>
+                        </div>
+                    `;
+                        }
+                    } else {
+                        vehiculosHTML = '<p>No hay vehículos asociados a este evento.</p>';
+                    }
+                } else {
+                    console.error("Error al obtener los vehículos:", responseVehiculos.statusText);
+                    vehiculosHTML = '<p>Error al cargar los vehículos.</p>';
+                }
+
                 $('.detrasContenido').css('visibility', 'visible');
                 $('.contenido').html(`
-                    <div class="contenidoEvento">
-                        <section class="eventoInfoGeneral">
-                            <img src="${evento.foto}">
-                            <div>
-                                <div>
-                                    <h2>${evento.nombre}</h2>
-                                    ${evento.descripcion ? `<p>${evento.descripcion}</p>` : ''}
-                                </div>
-                                <div>
-                                    <p>El evento empieza el ${new Date(evento.fechaHoraInicio).toLocaleString()}${evento.ubicacion ? ` en ${evento.ubicacion}` : ''} y acaba el ${new Date(evento.fechaHoraFin).toLocaleString()}</p>
-                                </div>
-                                <div>
-                                    <p>${evento.privacidad ? "Evento privado" : "Evento público"} y la id del evento es #${idEvento}</p>
-                                </div>
-                            </div>
-                        </section>
-                        <section class="eventoVehiculos">
-                            <p class="boton btnMisVehiculos">Mis vehiculos</p>
-                            <div class="listaVehiculos"></div>
-                        </section>
-                        <section class="eventoChat"></section>
-                        <section class="eventoLinks">
-                            ${evento.links && evento.links.length > 0 ? evento.links.map(link => `
-                                    <div class="eventoLink">
-                                        <a href="${link.link}" target="_blank">${link.nombre}</a>
-                                    </div>
-                                `).join('') : '<p>No hay ningún enlace externo</p>'
-                            }
-                        </section>
-                        <section class="eventoListaUsu">
-                            ${usuariosHTML}
-                        </section>
-                        <div class="EventoXIcon">
-                            <p class="boton EntrarAbandonar">${participa ? "Abandonar" : "Participar"}</p>
-                            <div class="xIcon">&#10006;</div>
+            <div class="contenidoEvento">
+                <section class="eventoInfoGeneral">
+                    <img src="${evento.foto}">
+                    <div>
+                        <div>
+                            <h2>${evento.nombre}</h2>
+                            ${evento.descripcion ? `<p>${evento.descripcion}</p>` : ''}
+                        </div>
+                        <div>
+                            <p>El evento empieza el ${new Date(evento.fechaHoraInicio).toLocaleString()}${evento.ubicacion ? ` en ${evento.ubicacion}` : ''} y acaba el ${new Date(evento.fechaHoraFin).toLocaleString()}</p>
+                        </div>
+                        <div>
+                            <p>${evento.privacidad ? "Evento privado" : "Evento público"} y la id del evento es #${idEvento}</p>
                         </div>
                     </div>
-                `);
-    
-                $(".xIcon").off().on("click", function () {
-                    $('.detrasContenido').css('visibility', 'hidden');
-                    $('.contenido').html("");
-                    $(".contenido").css("background-color", "#D0E7D2")
+                </section>
+                <section class="eventoVehiculos">
+                    <div>
+                        <p class="boton btnMisVehiculos">Mis vehiculos</p>
+                        <div style="display:none" class="divMisVehiculos"></div>
+                    </div>
+                    <div class="listaVehiculos">
+                        ${vehiculosHTML}
+                    </div>
+                </section>
+                <section class="eventoChat"></section>
+                <section class="eventoLinks">
+                    ${evento.links && evento.links.length > 0 ? evento.links.map(link => `
+                            <div class="eventoLink">
+                                <a href="${link.link}" target="_blank">${link.nombre}</a>
+                            </div>
+                        `).join('') : '<p>No hay ningún enlace externo</p>'
+                    }
+                </section>
+                <section class="eventoListaUsu">
+                    ${usuariosHTML}
+                </section>
+                <div class="EventoXIcon">
+                    <p class="boton entrarAbandonar">${participa ? "Abandonar" : "Participar"}</p>
+                    <div class="xIcon">&#10006;</div>
+                </div>
+            </div>
+            `);
+
+                $(".btnMisVehiculos").off().on("click", async function () {
+                    let divMisVehiculos = $(".divMisVehiculos");
+                    divMisVehiculos.toggle();
+
+                    if (divMisVehiculos.is(":visible")) {
+                        try {
+                            let responseVehiculosUsuario = await fetch(`/vehiculosPorUsuario`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                },
+                                body: JSON.stringify({ idUsuario }),
+                            });
+
+                            if (responseVehiculosUsuario.ok) {
+                                let vehiculosUsuario = await responseVehiculosUsuario.json();
+
+                                let responseVehiculosEvento = await fetch(`/vehiculosPorEvento/${idEvento}`, {
+                                    method: "GET",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    },
+                                });
+
+                                let vehiculosEvento = [];
+                                if (responseVehiculosEvento.ok) {
+                                    vehiculosEvento = await responseVehiculosEvento.json();
+                                }
+
+                                let misVehiculosHTML = vehiculosUsuario.map((vehiculo) => {
+                                    let checked = vehiculosEvento.some(
+                                        (vehiculoEvento) => vehiculoEvento.id === vehiculo.id
+                                    )
+                                        ? "checked"
+                                        : "";
+
+                                    return `
+                                    <div class="vehiculoUsuario">
+                                        <input type="checkbox" class="vehiculoCheckbox" style="transform: scale(1.5);" id="vehiculo${vehiculo.id}" ${checked}>
+                                        <label for="vehiculo${vehiculo.id}">
+                                            ${vehiculo.nombre} (${vehiculo.capacidad} asientos)
+                                        </label>
+                                    </div>
+                                `;
+                                }).join("");
+
+                                divMisVehiculos.html(misVehiculosHTML);
+
+                                $(".vehiculoCheckbox").off().on("change", async function () {
+                                    let vehiculoId = $(this).attr("id").replace("vehiculo", "");
+                                    let checked = $(this).is(":checked");
+
+                                    try {
+                                        if (checked) {
+                                            let responseAdd = await fetch(`/addVehiculoEvento/${idEvento}`, {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/json",
+                                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                                },
+                                                body: JSON.stringify({ idVehiculo: vehiculoId }),
+                                            });
+
+                                            if (!responseAdd.ok) {
+                                                console.error("Error al añadir vehículo al evento:", responseAdd.statusText);
+                                            }
+                                        } else {
+                                            let responseRemove = await fetch(`/removeVehiculoEvento/${idEvento}`, {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/json",
+                                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                                },
+                                                body: JSON.stringify({ idVehiculo: vehiculoId }),
+                                            });
+
+                                            if (!responseRemove.ok) {
+                                                console.error("Error al eliminar vehículo del evento:", responseRemove.statusText);
+                                            }
+                                        }
+
+                                        // Actualiza la lista de vehículos
+                                        await actualizarListaVehiculos(idEvento);
+                                    } catch (error) {
+                                        console.error("Error al manejar el checkbox del vehículo:", error);
+                                    }
+                                });
+                            } else {
+                                console.error("Error al obtener los vehículos del usuario:", responseVehiculosUsuario.statusText);
+                            }
+                        } catch (error) {
+                            console.error("Hubo un error al cargar los vehículos:", error);
+                        }
+                    }
                 });
+
+                $(".entrarAbandonar").off().on("click", async function () {
+                    let accion = $(this).text();
+                    try {
+                        if (accion === "Participar") {
+                            let response = await fetch(`/participarEvento/${idEvento}`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                },
+                                body: JSON.stringify({ idUsuario }),
+                            });
+                            if (response.ok) {
+                                $(this).text("Abandonar");
+                                eventosPorUsuario();
+                            }
+                        } else if (accion === "Abandonar") {
+                            let response = await fetch(`/abandonarEvento/${idEvento}`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                },
+                                body: JSON.stringify({ idUsuario }),
+                            });
+                            if (response.ok) {
+                                $(this).text("Participar");
+                                eventosPorUsuario();
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error en la acción del botón:", error);
+                    }
+                });
+
+                $(".xIcon").off().on("click", function () {
+                    $(".detrasContenido").css("visibility", "hidden");
+                });
+
             } else {
-                console.error("Error al obtener el evento:", responseEvento.statusText);
+                console.error("Error al obtener los datos del evento:", responseEvento.statusText);
             }
         } catch (error) {
-            console.error("Hubo un error al comunicarse con el servidor:", error);
+            console.error("Error al cargar el evento:", error);
         }
     });
+
+    async function actualizarListaVehiculos(idEvento) {
+        try {
+            let responseVehiculos = await fetch(`/vehiculosPorEvento/${idEvento}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (responseVehiculos.ok) {
+                let vehiculos = await responseVehiculos.json();
+                let vehiculosHTML = '';
+
+                if (vehiculos.length > 0) {
+                    for (let vehiculo of vehiculos) {
+                        vehiculosHTML += `
+                        <div class="vehiculo">
+                            <img class="imgVehiculoPequeno" src="${vehiculo.foto}">
+                            <div>
+                                <p>${vehiculo.nombre}</p>
+                                <p>${vehiculo.capacidad} asientos</p>
+                            </div>
+                        </div>
+                    `;
+                    }
+                } else {
+                    vehiculosHTML = '<p>No hay vehículos asociados a este evento.</p>';
+                }
+
+                $(".listaVehiculos").html(vehiculosHTML);
+            } else {
+                console.error("Error al obtener los vehículos:", responseVehiculos.statusText);
+                $(".listaVehiculos").html('<p>Error al cargar los vehículos.</p>');
+            }
+        } catch (error) {
+            console.error("Error al actualizar la lista de vehículos:", error);
+            $(".listaVehiculos").html('<p>Error al cargar los vehículos.</p>');
+        }
+    }
 
     //CHATS
     $(".agregarAmigoP").on("click", function () {

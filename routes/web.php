@@ -91,6 +91,9 @@ Route::post('/cambiarContrasena/{id}', [UserController::class, 'cambiarContrasen
 Route::resource('eventos', eventoController::class);
 Route::post('/eventosPorUsuario', [EventoController::class, 'eventosPorUsuario']);
 Route::get('/usuariosPorEvento/{id}', [EventoController::class, 'usuariosPorEvento']);
+Route::get('/vehiculosPorEvento/{id}', [EventoController::class, 'vehiculosPorEvento']);
+Route::post('/participarEvento/{id}', [EventoController::class, 'participarEvento']);
+Route::post('/abandonarEvento/{id}', [EventoController::class, 'abandonarEvento']);
 
 Route::resource('foros', foroController::class);
 
@@ -99,3 +102,5 @@ Route::post('/amigosPorUsuario', [mensajeController::class, 'amigosPorUsuario'])
 
 Route::resource('vehiculos', vehiculoController::class);
 Route::post('/vehiculosPorUsuario', [vehiculoController::class, 'vehiculosPorUsuario']);
+Route::post('/addVehiculoEvento/{id}', [vehiculoController::class, 'addVehiculoEvento']);
+Route::post('/removeVehiculoEvento/{id}', [vehiculoController::class, 'removeVehiculoEvento']);

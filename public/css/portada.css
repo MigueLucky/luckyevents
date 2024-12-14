@@ -156,6 +156,31 @@ main {
 .eventoVehiculos {
     grid-column: 1 / 2;
     grid-row: 2 / 4;
+    overflow: auto;
+    max-height: 460px;
+}
+
+.listaVehiculos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.vehiculo {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    border-radius: 25px;
+    align-items: center;
+    min-height: 50px;
+    margin: 5px;
+    background-color: #618264;
+    width: 90%;
+}
+
+.vehiculo > div {
+    width: 100%;
+    text-align: center;
 }
 
 .eventoChat {
@@ -192,6 +217,7 @@ main {
 
 .imgEventoPequeno,
 .imgAmigoPequeno,
+.imgVehiculoPequeno,
 .imgUsuario {
     min-width: 50px;
     min-height: 50px;
