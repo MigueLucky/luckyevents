@@ -28,8 +28,6 @@ class EventoController extends Controller
             'gusto'
         ]);
 
-        $privacidad = $request->has('privacidad') && $request->privacidad == 'on';
-
         if ($request->hasFile('foto')) {
             $path = $request->file('foto')->store('eventos', 'public');
             $path = "storage/" . $path;
@@ -44,7 +42,7 @@ class EventoController extends Controller
 
             $evento = Evento::create([
                 'nombre' => $data['nombre'],
-                'privacidad' => $privacidad,
+                'privacidad' => $data['privacidad'],
                 'fechaHoraInicio' => $data['fechaHoraInicio'],
                 'fechaHoraFin' => $data['fechaHoraFin'],
                 'foto' => $path,
@@ -136,7 +134,7 @@ class EventoController extends Controller
                 return response()->json(['error' => 'El evento no existe.'], 404);
             }
 
-            $existe = DB::table('evento_usuario')
+            $existe = DB::table('usuario_eventos')
                 ->where('id_evento', $idEvento)
                 ->where('id_usuario', $idUsuario)
                 ->exists();
@@ -145,7 +143,7 @@ class EventoController extends Controller
                 return response()->json(['message' => 'Ya estás participando en este evento.'], 200);
             }
 
-            DB::table('evento_usuario')->insert([
+            DB::table('usuario_eventos')->insert([
                 'id_evento' => $idEvento,
                 'id_usuario' => $idUsuario,
                 'created_at' => now(),
@@ -168,7 +166,7 @@ class EventoController extends Controller
                 return response()->json(['error' => 'El evento no existe.'], 404);
             }
 
-            $deleted = DB::table('evento_usuario')
+            $deleted = DB::table('usuario_eventos')
                 ->where('id_evento', $idEvento)
                 ->where('id_usuario', $idUsuario)
                 ->delete();
@@ -181,5 +179,22 @@ class EventoController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Hubo un error al abandonar el evento.'], 500);
         }
+    }
+
+    public function eventosPorUbiFavorita()
+    {
+        $ubicacionFavorita = auth()->user()->ubicacionFavorita;
+
+        if (!$ubicacionFavorita) {
+            return response()->json([]);
+        }
+
+        $eventos = Evento::where('ubicacion', $ubicacionFavorita)->get();
+
+        $eventosFiltrados = $eventos->filter(function ($evento) {
+            return !$evento->usuarios->contains(auth()->user());
+        });
+
+        return response()->json($eventosFiltrados);
     }
 }

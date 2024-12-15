@@ -94,6 +94,7 @@ Route::get('/usuariosPorEvento/{id}', [EventoController::class, 'usuariosPorEven
 Route::get('/vehiculosPorEvento/{id}', [EventoController::class, 'vehiculosPorEvento']);
 Route::post('/participarEvento/{id}', [EventoController::class, 'participarEvento']);
 Route::post('/abandonarEvento/{id}', [EventoController::class, 'abandonarEvento']);
+Route::get('/eventosPorUbiFavorita', [EventoController::class, 'eventosPorUbiFavorita']);
 
 Route::resource('foros', foroController::class);
 

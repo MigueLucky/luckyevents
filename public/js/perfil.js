@@ -62,7 +62,7 @@ $(function () {
 
     vehiculosPorUsuario();
 
-    $("html").on("click", ".anadirVehiculo", function () {
+    $(".anadirVehiculo").off().on("click", function () {
         $(".crearVehiculo > div").toggle();
     })
 
@@ -104,7 +104,7 @@ $(function () {
         }
     }
 
-    $("html").on("click", ".btnVehiculo", function () {
+    $(".btnVehiculo").off().on("click", function () {
         let nombreVehiculo = $("#vehiculoNombre").val();
         let capacidadVehiculo = $("#vehiculoCapacidad").val();
 
@@ -142,7 +142,7 @@ $(function () {
         }
     });
 
-    $("html").on("click", ".eliminarVehiculo", async function () {
+    $(".eliminarVehiculo").on("click", async function () {
         let idVehiculo = $(this).attr("id");
     
         try {
@@ -188,11 +188,11 @@ $(function () {
         }
     });
 
-    $("html").on("click", ".actuContra", function () {
+    $(".actuContra").off().on("click", function () {
         $(".mostrarActuContra").toggle();
     })
 
-    $("html").on("click", ".btnActuContra", function () {
+    $(".btnActuContra").off().on("click", function () {
         let antContra = $("#antiguaContra").val();
         let nueContra = $("#nuevaContra").val();
 
@@ -210,7 +210,7 @@ $(function () {
         }
     });
 
-    $("html").on("click", ".actuDatos", function () {
+    $(".actuDatos").off().on("click", function () {
         let nombre = $("#usuNombre").val();
         let email = $("#usuEmail").val();
 
@@ -345,7 +345,7 @@ $(function () {
 
     eventosPorUsuario()
 
-    $("html").on('click', '.evento', function () {
+    $('.evento').off().on('click', function () {
         $('.detrasContenido').css('visibility', 'visible');
         $('.contenido').html(`
             <div class="tituloContenido">
@@ -491,6 +491,11 @@ $(function () {
             let nombre = $("#nombreEvento").val();
             let descripcion = $("#descripcionEvento").val();
             let privacidadEvento = $("#privacidadEvento").prop('checked');
+            if(privacidadEvento){
+                privacidadEvento = 0;
+            }else {
+                privacidadEvento = 1;
+            }
             let colorEvento = $("#colorEvento").val();
             let fechaHoraInicio = $("#inicioEvento").val();
             let ubicacionEvento = $("#ubicacionEvento").val();

@@ -115,7 +115,7 @@ $(function () {
         $(this).css("background-color", "#618264");
     });
 
-    $("html").on("click", "footer h4", function () {
+    $("footer h4").on("click", function () {
         window.location.href = '/terminos';
     });
 })

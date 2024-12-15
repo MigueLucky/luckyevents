@@ -31,22 +31,41 @@
             <section class="amigos">
                 <div class="nuevoAmigo">
                     <p class="agregarAmigoP boton">Agregar amigo</p>
-                    <p class="agregarAmigoResultado" style="display: none;" >Chat creado correctamente</p>
+                    <p class="agregarAmigoResultado" style="display: none;">Chat creado correctamente</p>
                     <div class="agregarAmigoDIV" style="display: none;">
                         <label for="hashAmigo">Id de tu amigo:</label>
                         <input type="text" id="hashAmigo" name="hashAmigo" placeholder="#0000">
                         <p class="agregarAmigo boton" style="margin: 0;">Agregar</p>
                     </div>
                 </div>
-                <div class="listaAmigos">
-                </div>
+                <div class="listaAmigos"></div>
             </section>
-            <section class="texto">
-
-            </section>
+            <section class="texto"></section>
         </article>
-        <article class="eventosPublicos"></article>
-        <article class="foros"></article>
+        <article class="eventosPublicos">
+            <div class="headerEventosPublicos">
+                <div class="addEventoDiv">
+                    <label for="idAddEvento">Id del evento:</label>
+                    <input type="text" id="idAddEvento" name="idAddEvento" placeholder="#0000">
+                    <p class="addEvento boton" style="margin: 0;">Participar</p>
+                    <p class="resultadoAddEvento" style="color: red;"></p>
+                </div>
+                <p class="boton listarEventosPublicos">Lista de eventos publicos</p>
+            </div>
+            <div class="mainEventosPublicos"></div>
+        </article>
+        <article class="foros">
+            <div class="headerForos">
+                <div class="addForoDiv">
+                    <label for="idAddForo">Id del foro:</label>
+                    <input type="text" id="idAddForo" name="idAddForo" placeholder="#0000">
+                    <p class="idAddForo boton" style="margin: 0;">Unirse</p>
+                    <p class="resultadoAddForo" style="color: red;"></p>
+                </div>
+                <p class="boton listarForos">Lista de foros</p>
+            </div>
+            <div class="mainForo"></div>
+        </article>
     </main>
     @include('components.footer')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
