@@ -1,19 +1,65 @@
-.ordenYFiltro {
-    display: flex;
-    margin: 10px;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.ordenYFiltro p{
-    margin: 0;
-}
-
-.filtro {
+.addEventoDiv {
     display: flex;
     align-items: center;
+    margin: 5px;
 }
 
-.evento {
+.detrasContenido {
+    visibility: hidden;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10;
+}
+
+.contenido {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    background-color: #D0E7D2;
+    padding: 20px;
+}
+
+.todosEventos {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.eventoPublico {
+    max-width: 250px;
+    margin: 30px;
+    text-align: center;
     border-radius: 25px;
+}
+
+.eventoPublico img {
+    width: 250px;
+    height: 150px;
+    border-radius: 25px 25px 0px 0px;
+}
+
+.eventoPublico p{
+    margin: 5px;
+}
+
+.xIcon {
+    color: red;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.xIconEventoPublico {
+    position: absolute;
+    right: 45px;
+}
+
+.eventoPublico {
+    cursor: pointer;
 }

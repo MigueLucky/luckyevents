@@ -621,6 +621,10 @@ $(function () {
     //Eventos publicos
     let ubicacionFavorita = usuario.ubicacionFavorita;
 
+    $(".listarEventosPublicos").off().on("click", function(){
+        window.location.href = '/listaEventos';
+    })
+
     if (!ubicacionFavorita) {
         $(".mainEventosPublicos").html("<p>No tienes una ubicación favorita configurada.</p>");
     } else {
@@ -642,7 +646,7 @@ $(function () {
                     if (eventos.length > 0) {
                         let eventosHTML = '';
                         eventos.forEach(evento => {
-                            if (!evento.privacidad) {
+                            if (!evento.privacidad && hoy.toISOString() < evento.fechaHoraFin) {
                                 let fechaInicio = new Date(evento.fechaHoraInicio).toLocaleDateString();
                                 let fechaFin = new Date(evento.fechaHoraFin).toLocaleDateString();
 
@@ -761,84 +765,85 @@ $(function () {
         let idEventoUnirse = $("#idAddEvento").val().replace("#", "");
         let resultadoAddEvento = $(".resultadoAddEvento");
 
-        try {
-            // Realizamos una solicitud al servidor para comprobar si el evento es válido
-            let response = await fetch(`/eventos/${idEventoUnirse}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                }
-            });
-
-            if (response.ok) {
-                let evento = await response.json();
-
-                $('.detrasContenido').css('visibility', 'visible');
-                $('.contenido').css('width', 'auto');
-                $(".contenido").css("background-color", evento.color);
-                $('.contenido').html(`
-                            <div style="background-color: #D0E7D2; padding:15px;">
-                                <div class="xIcon xIconEventoPublico">&#10006;</div>
-                                <img src="${evento.foto}" style="max-width: 400px;"/>
-                                <div>
-                                    <h2 style="text-align:center">${evento.nombre}</h2>
-                                    <p><strong>Descripción:</strong> ${evento.descripcion ? evento.descripcion : "No tiene descripción"}</p>
-                                    <p><strong>Ubicación:</strong> ${evento.ubicacion ? evento.ubicacion : "Ubicación no especificada"}</p>
-                                    <p><strong>Fecha de inicio:</strong> ${new Date(evento.fechaHoraInicio).toLocaleDateString()}</p>
-                                    <p><strong>Fecha de fin:</strong> ${new Date(evento.fechaHoraFin).toLocaleDateString()}</p>
-                                </div>
-                                <p class="boton unirseEventoPublico">Unirse al evento</p>
-                            </div>
-                        `);
-
-                $(".xIcon").off().on("click", function () {
-                    $('.detrasContenido').css('visibility', 'hidden');
-                    $('.contenido').css('width', '90%');
-                    $(".contenido").css("background-color", "#D0E7D2");
-                    $('.contenido').html("");
-                });
-
-                $(".unirseEventoPublico").off().on("click", async function () {
-                    try {
-                        let responseUnirse = await fetch(`/participarEvento/${idEventoUnirse}`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            },
-                            body: JSON.stringify({
-                                idUsuario: idUsuario
-                            })
-                        });
-
-                        if (responseUnirse.ok) {
-                            $('.detrasContenido').css('visibility', 'hidden');
-                            $('.contenido').css('width', '90%');
-                            $(".contenido").css("background-color", "#D0E7D2");
-                            $('.contenido').html("");
-
-                            eventosPorUsuario();
-                        } else {
-                            $('.detrasContenido').css('visibility', 'hidden');
-                            $('.contenido').css('width', '90%');
-                            $(".contenido").css("background-color", "#D0E7D2");
-                            $('.contenido').html("");
-                            console.error("Error al unirse al evento:", responseUnirse.statusText);
-                        }
-                    } catch (error) {
-                        console.error("Hubo un error al unirse al evento:", error);
+        if (!idEventoUnirse) {
+            resultadoAddEvento.text("Por favor, ingresa un ID válido para el evento.");
+        }else{
+            try {
+                let response = await fetch(`/eventos/${idEventoUnirse}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     }
                 });
-
-            } else if (response.status === 404) {
-                resultadoAddEvento.text("El evento no existe. Por favor, verifica la ID ingresada.");
-            } else {
-                resultadoAddEvento.text("Hubo un error al verificar el evento. Inténtalo nuevamente.");
+    
+                if (response.ok) { 
+                    let evento = await response.json();
+    
+                    $('.detrasContenido').css('visibility', 'visible');
+                    $('.contenido').css('width', 'auto');
+                    $(".contenido").css("background-color", evento.color);
+                    $('.contenido').html(`
+                                <div style="background-color: #D0E7D2; padding:15px;">
+                                    <div class="xIcon xIconEventoPublico">&#10006;</div>
+                                    <img src="${evento.foto}" style="max-width: 400px;"/>
+                                    <div>
+                                        <h2 style="text-align:center">${evento.nombre}</h2>
+                                        <p><strong>Descripción:</strong> ${evento.descripcion ? evento.descripcion : "No tiene descripción"}</p>
+                                        <p><strong>Ubicación:</strong> ${evento.ubicacion ? evento.ubicacion : "Ubicación no especificada"}</p>
+                                        <p><strong>Fecha de inicio:</strong> ${new Date(evento.fechaHoraInicio).toLocaleDateString()}</p>
+                                        <p><strong>Fecha de fin:</strong> ${new Date(evento.fechaHoraFin).toLocaleDateString()}</p>
+                                    </div>
+                                    <p class="boton unirseEventoPublico">Unirse al evento</p>
+                                </div>
+                            `);
+    
+                    $(".xIcon").off().on("click", function () {
+                        $('.detrasContenido').css('visibility', 'hidden');
+                        $('.contenido').css('width', '90%');
+                        $(".contenido").css("background-color", "#D0E7D2");
+                        $('.contenido').html("");
+                    });
+    
+                    $(".unirseEventoPublico").off().on("click", async function () {
+                        try {
+                            let responseUnirse = await fetch(`/participarEvento/${idEventoUnirse}`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                },
+                                body: JSON.stringify({
+                                    idUsuario: idUsuario
+                                })
+                            });
+    
+                            if (responseUnirse.ok) {
+                                $('.detrasContenido').css('visibility', 'hidden');
+                                $('.contenido').css('width', '90%');
+                                $(".contenido").css("background-color", "#D0E7D2");
+                                $('.contenido').html("");
+                            } else {
+                                $('.detrasContenido').css('visibility', 'hidden');
+                                $('.contenido').css('width', '90%');
+                                $(".contenido").css("background-color", "#D0E7D2");
+                                $('.contenido').html("");
+                                console.error("Error al unirse al evento:", responseUnirse.statusText);
+                            }
+                        } catch (error) {
+                            console.error("Hubo un error al unirse al evento:", error);
+                        }
+                    });
+    
+                } else if (response.status === 404) {
+                    resultadoAddEvento.text("El evento no existe. Por favor, verifica la ID ingresada.");
+                } else {
+                    resultadoAddEvento.text("Hubo un error al verificar el evento. Inténtalo nuevamente.");
+                }
+            } catch (error) {
+                console.error("Error al verificar el evento:", error);
+                resultadoAddEvento.text("Error al verificar el evento. Inténtalo más tarde.");
             }
-        } catch (error) {
-            console.error("Error al verificar el evento:", error);
-            resultadoAddEvento.text("Error al verificar el evento. Inténtalo más tarde.");
         }
     });
 

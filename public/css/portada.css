@@ -275,6 +275,7 @@ main {
 .headerEventosPublicos {
     display: flex;
     margin-bottom: 10px;
+    align-items: center;
 }
 
 .xIconEventoPublico {
@@ -293,4 +294,5 @@ main {
 
 .headerForos {
     display: flex;
+    align-items: center;
 }
