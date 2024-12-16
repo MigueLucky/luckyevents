@@ -823,6 +823,8 @@ $(function () {
                                 $('.contenido').css('width', '90%');
                                 $(".contenido").css("background-color", "#D0E7D2");
                                 $('.contenido').html("");
+
+                                eventosPorUsuario();
                             } else {
                                 $('.detrasContenido').css('visibility', 'hidden');
                                 $('.contenido').css('width', '90%');

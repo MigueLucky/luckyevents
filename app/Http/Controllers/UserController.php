@@ -33,17 +33,28 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
+    
+        // Intentar autenticar al usuario con las credenciales proporcionadas
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-
+    
+            // Verificar si el usuario está bloqueado
+            if ($user->bloqueado) {
+                // Cerrar la sesión del usuario inmediatamente después de autenticarlo
+                Auth::logout();
+    
+                return response()->json([
+                    'error' => 'Este usuario está bloqueado y no puede iniciar sesión.'
+                ], 403); // Código 403 para "Prohibido"
+            }
+    
             return response()->json([
-                'message' => 'Login successful',
+                'message' => 'Login exitoso.',
                 'user' => $user
             ], 200);
         } else {
             return response()->json([
-                'error' => 'Unauthorized'
+                'error' => 'Credenciales inválidas.'
             ], 401);
         }
     }

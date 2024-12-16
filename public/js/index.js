@@ -105,26 +105,26 @@ $(function () {
 
     async function iniciarsesion(email, contrasena) {
         try {
-            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    
             let response = await fetch("/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": csrfToken
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 },
                 body: JSON.stringify({
                     email: email,
                     password: contrasena,
                 }),
             });
-    
+
             if (response.ok) {
                 let data = await response.json();
 
                 localStorage.setItem('user', JSON.stringify(data.user));
-
                 window.location.href = "/portada";
+
+            } else if (response.status === 403) {
+                $(".mensajeError").text("El usuario esta bloqueado. Contacta con soporte");
             } else {
                 $(".mensajeError").text("Email o contraseña incorrectos");
             }
