@@ -159,7 +159,15 @@ $(function () {
                         ${vehiculosHTML}
                     </div>
                 </section>
-                <section class="eventoChat"></section>
+                <section class="eventoChat">
+                    <div>
+                        <div class="mainEventoChat"></div>
+                        <div class="footerEventoChat">
+                            <input class="contenidoEnviarMensajeEvento" type="text">
+                            <p class="boton enviarMensajeEvento">Enviar</p>
+                        </div>
+                    </div>
+                </section>
                 <section class="eventoLinks">
                     ${evento.links && evento.links.length > 0 ? evento.links.map(link => `
                             <div class="eventoLink">
@@ -570,15 +578,143 @@ $(function () {
         $(".agregarAmigoDIV").toggle();
     })
 
-    $(".agregarAmigo").on("click", function () {
-        $(".agregarAmigoDIV").hide();
-        $(".agregarAmigoResultado").show();
-        setTimeout(function () {
-            $(".agregarAmigoResultado").hide();
-        }, 3000);
-    })
+    $(".agregarAmigo").on("click", async function () {
+        let idAmigoAgregar = $("#hashAmigo").val().replace("#", "");
+
+        try {
+            let response = await fetch(`/users/${idAmigoAgregar}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+            });
+
+            if (response.ok) {
+                $(".agregarAmigoDIV").hide();
+                let usuario = await response.json();
+
+                let amigoHtml = `
+                <section class="amigo" id="amigo${usuario.id}">
+                    <img class="imgAmigoPequeno" src="${usuario.foto}">
+                    <p>${usuario.nombre}</p>
+                </section>
+            `;
+                $(".listaAmigos").append(amigoHtml);
+
+
+                $(".amigo").off().on("click", async function () {
+                    let idAmigo = $(this).attr("id").replace("amigo", "");
+        
+                    $(".footerTexto").css("display", "flex");
+                    $(".headerTexto").html("");
+                    $(".mainTexto").html("");
+                    try {
+                        let response = await fetch(`/users/${idAmigo}`, {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            },
+                        });
+        
+                        if (response.ok) {
+                            let infoAmigo = await response.json();
+        
+                            $(".headerTexto").css("border-bottom", "3px solid #D0E7D2");
+                            $(".headerTexto").html(`
+                                <img src="${infoAmigo.foto}" class="img-fluid" style="width: 50px; height: 50px; border-radius: 50%;" />
+                                <div>
+                                    <p>${infoAmigo.nombre} ${infoAmigo.apellido ? infoAmigo.apellido : ""}</p>
+                                    <p class="leyenda">${infoAmigo.leyenda ? infoAmigo.leyenda : ""}</p>
+                                </div>   
+                            `);
+        
+                            try {
+                                let response = await fetch(`/mensajes/usuario/${idUsuario}/${idAmigo}/usuario`, {
+                                    method: "GET",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    },
+                                });
+        
+                                if (response.ok) {
+                                    let mensajes = await response.json();
+        
+                                    mensajes.forEach(mensaje => {
+                                        let mensajeHTML = `
+                                            <p class="${mensaje.id_usuario === idUsuario ? "misMensajes" : "susMensajes"} mensaje">${mensaje.contenido}</p>
+                                        `;
+                                        $(".mainTexto").append(mensajeHTML);
+                                    });
+                                } else {
+                                    $(".mainTexto").html("<p>No se pudieron cargar los mensajes, intenta más tarde.</p>");
+                                }
+                            } catch (error) {
+                                $(".mainTexto").html("<p>Hubo un problema inesperado, intentalo más tarde.</p>");
+                            }
+        
+                            $(".enviarMensaje").off().on("click", function () {
+                                enviarMensaje(idAmigo);
+                            });
+        
+                        } else {
+                            $(".mainTexto").html("<p>No se pudo encontro a tu amigo, intentalo mas tarde</p>");
+                        }
+                    } catch (error) {
+                        $(".mainTexto").html("<p>Hubo un problema inesperado, intentalo mas tarde</p>");
+                    }
+                })
+        
+                async function enviarMensaje(idAmigo) {
+                    let contenido = $(".contenidoEnviarMensaje").val();
+        
+                    if (!contenido.trim()) {
+                        return;
+                    }
+        
+                    try {
+                        let response = await fetch(`/mensajes/usuario/${idUsuario}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            },
+                            body: JSON.stringify({
+                                contenido: contenido,
+                                tipo: "usuario",
+                                id_destino: idAmigo
+                            }),
+                        });
+        
+                        if (response.ok) {
+                            let mensaje = await response.json();
+        
+                            let mensajeHTML = `
+                                <p class="mensaje misMensajes">${mensaje.contenido}</p>
+                            `;
+        
+                            $(".mainTexto").append(mensajeHTML);
+        
+                            $(".contenidoEnviarMensaje").val("");
+                        } else {
+                            $(".mainTexto").append("<p>No se pudo enviar el mensaje, intenta más tarde.</p>");
+                        }
+                    } catch (error) {
+                        $(".mainTexto").append("<p>Hubo un problema al enviar el mensaje. Inténtalo más tarde.</p>");
+                    }
+                }
+            } else {
+                $(".agregarAmigoResultado").text("El usuario no existe. Por favor, verifica el ID.");
+            }
+        } catch (error) {
+            $(".agregarAmigoResultado").text("Ocurrió un error inesperado. Intenta nuevamente más tarde.");
+        }
+    });
 
     async function amigosPorUsuario() {
+        $(".listaAmigos").html("");
         try {
             let response = await fetch("/amigosPorUsuario", {
                 method: "POST",
@@ -614,6 +750,109 @@ $(function () {
         } catch (error) {
             $(".listaAmigos").html("<p>Hubo un error en la comunicación con el servidor.</p>");
         }
+
+        $(".amigo").off().on("click", async function () {
+            let idAmigo = $(this).attr("id").replace("amigo", "");
+
+            $(".footerTexto").css("display", "flex");
+            $(".headerTexto").html("");
+            $(".mainTexto").html("");
+            try {
+                let response = await fetch(`/users/${idAmigo}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                });
+
+                if (response.ok) {
+                    let infoAmigo = await response.json();
+
+                    $(".headerTexto").css("border-bottom", "3px solid #D0E7D2");
+                    $(".headerTexto").html(`
+                        <img src="${infoAmigo.foto}" class="img-fluid" style="width: 50px; height: 50px; border-radius: 50%;" />
+                        <div>
+                            <p>${infoAmigo.nombre} ${infoAmigo.apellido ? infoAmigo.apellido : ""}</p>
+                            <p class="leyenda">${infoAmigo.leyenda ? infoAmigo.leyenda : ""}</p>
+                        </div>   
+                    `);
+
+                    try {
+                        let response = await fetch(`/mensajes/usuario/${idUsuario}/${idAmigo}/usuario`, {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            },
+                        });
+
+                        if (response.ok) {
+                            let mensajes = await response.json();
+
+                            mensajes.forEach(mensaje => {
+                                let mensajeHTML = `
+                                    <p class="${mensaje.id_usuario === idUsuario ? "misMensajes" : "susMensajes"} mensaje">${mensaje.contenido}</p>
+                                `;
+                                $(".mainTexto").append(mensajeHTML);
+                            });
+                        } else {
+                            $(".mainTexto").html("<p>No se pudieron cargar los mensajes, intenta más tarde.</p>");
+                        }
+                    } catch (error) {
+                        $(".mainTexto").html("<p>Hubo un problema inesperado, intentalo más tarde.</p>");
+                    }
+
+                    $(".enviarMensaje").off().on("click", function () {
+                        enviarMensaje(idAmigo);
+                    });
+
+                } else {
+                    $(".mainTexto").html("<p>No se pudo encontro a tu amigo, intentalo mas tarde</p>");
+                }
+            } catch (error) {
+                $(".mainTexto").html("<p>Hubo un problema inesperado, intentalo mas tarde</p>");
+            }
+        })
+
+        async function enviarMensaje(idAmigo) {
+            let contenido = $(".contenidoEnviarMensaje").val();
+
+            if (!contenido.trim()) {
+                return;
+            }
+
+            try {
+                let response = await fetch(`/mensajes/usuario/${idUsuario}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                    body: JSON.stringify({
+                        contenido: contenido,
+                        tipo: "usuario",
+                        id_destino: idAmigo
+                    }),
+                });
+
+                if (response.ok) {
+                    let mensaje = await response.json();
+
+                    let mensajeHTML = `
+                        <p class="mensaje misMensajes">${mensaje.contenido}</p>
+                    `;
+
+                    $(".mainTexto").append(mensajeHTML);
+
+                    $(".contenidoEnviarMensaje").val("");
+                } else {
+                    $(".mainTexto").append("<p>No se pudo enviar el mensaje, intenta más tarde.</p>");
+                }
+            } catch (error) {
+                $(".mainTexto").append("<p>Hubo un problema al enviar el mensaje. Inténtalo más tarde.</p>");
+            }
+        }
     }
     amigosPorUsuario()
 
@@ -621,7 +860,7 @@ $(function () {
     //Eventos publicos
     let ubicacionFavorita = usuario.ubicacionFavorita;
 
-    $(".listarEventosPublicos").off().on("click", function(){
+    $(".listarEventosPublicos").off().on("click", function () {
         window.location.href = '/listaEventos';
     })
 
@@ -767,7 +1006,7 @@ $(function () {
 
         if (!idEventoUnirse) {
             resultadoAddEvento.text("Por favor, ingresa un ID válido para el evento.");
-        }else{
+        } else {
             try {
                 let response = await fetch(`/eventos/${idEventoUnirse}`, {
                     method: "GET",
@@ -776,10 +1015,10 @@ $(function () {
                         "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     }
                 });
-    
-                if (response.ok) { 
+
+                if (response.ok) {
                     let evento = await response.json();
-    
+
                     $('.detrasContenido').css('visibility', 'visible');
                     $('.contenido').css('width', 'auto');
                     $(".contenido").css("background-color", evento.color);
@@ -797,14 +1036,14 @@ $(function () {
                                     <p class="boton unirseEventoPublico">Unirse al evento</p>
                                 </div>
                             `);
-    
+
                     $(".xIcon").off().on("click", function () {
                         $('.detrasContenido').css('visibility', 'hidden');
                         $('.contenido').css('width', '90%');
                         $(".contenido").css("background-color", "#D0E7D2");
                         $('.contenido').html("");
                     });
-    
+
                     $(".unirseEventoPublico").off().on("click", async function () {
                         try {
                             let responseUnirse = await fetch(`/participarEvento/${idEventoUnirse}`, {
@@ -817,7 +1056,7 @@ $(function () {
                                     idUsuario: idUsuario
                                 })
                             });
-    
+
                             if (responseUnirse.ok) {
                                 $('.detrasContenido').css('visibility', 'hidden');
                                 $('.contenido').css('width', '90%');
@@ -836,7 +1075,7 @@ $(function () {
                             console.error("Hubo un error al unirse al evento:", error);
                         }
                     });
-    
+
                 } else if (response.status === 404) {
                     resultadoAddEvento.text("El evento no existe. Por favor, verifica la ID ingresada.");
                 } else {

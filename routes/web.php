@@ -104,6 +104,10 @@ Route::patch('/foros/{foro}/quitarReporte', [ForoController::class, 'quitarRepor
 
 Route::resource('mensajes', mensajeController::class);
 Route::post('/amigosPorUsuario', [mensajeController::class, 'amigosPorUsuario']);
+Route::get('/mensajes/usuario/{idUsuario}/{idAmigo}/{tipo}', [MensajeController::class, 'obtenerMensajes']);
+Route::get('/mensajes/foro/{idUsuario}/{id}/{tipo}', [MensajeController::class, 'obtenerMensajes']);
+Route::get('/mensajes/evento/{idUsuario}/{id}/{tipo}', [MensajeController::class, 'obtenerMensajes']);
+Route::post('/mensajes/usuario/{idUsuario}', [MensajeController::class, 'enviarMensaje']);
 
 Route::resource('vehiculos', vehiculoController::class);
 Route::post('/vehiculosPorUsuario', [vehiculoController::class, 'vehiculosPorUsuario']);

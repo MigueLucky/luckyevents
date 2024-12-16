@@ -31,7 +31,7 @@
             <section class="amigos">
                 <div class="nuevoAmigo">
                     <p class="agregarAmigoP boton">Agregar amigo</p>
-                    <p class="agregarAmigoResultado" style="display: none;">Chat creado correctamente</p>
+                    <p class="agregarAmigoResultado" style="display: none;"></p>
                     <div class="agregarAmigoDIV" style="display: none;">
                         <label for="hashAmigo">Id de tu amigo:</label>
                         <input type="text" id="hashAmigo" name="hashAmigo" placeholder="#0000">
@@ -40,7 +40,14 @@
                 </div>
                 <div class="listaAmigos"></div>
             </section>
-            <section class="texto"></section>
+            <section class="texto">
+                <div class="headerTexto"></div>
+                <div class="mainTexto"></div>
+                <div class="footerTexto">
+                    <input class="contenidoEnviarMensaje" type="text">
+                    <p class="boton enviarMensaje">Enviar</p>
+                </div>
+            </section>
         </article>
         <article class="eventosPublicos">
             <div class="headerEventosPublicos">
