@@ -134,57 +134,55 @@ $(function () {
 
                     $('.detrasContenido').css('visibility', 'visible');
                     $('.contenido').html(`
-            <div class="contenidoEvento">
-                <section class="eventoInfoGeneral">
-                    <img src="${evento.foto}">
-                    <div>
-                        <div>
-                            <h2>${evento.nombre}</h2>
-                            ${evento.descripcion ? `<p>${evento.descripcion}</p>` : ''}
-                        </div>
-                        <div>
-                            <p>El evento empieza el ${new Date(evento.fechaHoraInicio).toLocaleString()}${evento.ubicacion ? ` en ${evento.ubicacion}` : ''} y acaba el ${new Date(evento.fechaHoraFin).toLocaleString()}</p>
-                        </div>
-                        <div>
-                            <p>${evento.privacidad ? "Evento privado" : "Evento público"} y la id del evento es #${idEvento}</p>
-                        </div>
-                    </div>
-                </section>
-                <section class="eventoVehiculos">
-                    <div>
-                        <p class="boton btnMisVehiculos">Mis vehiculos</p>
-                        <div style="display:none" class="divMisVehiculos"></div>
-                    </div>
-                    <div class="listaVehiculos">
-                        ${vehiculosHTML}
-                    </div>
-                </section>
-                <section class="eventoChat">
-                    <div>
-                        <div class="mainEventoChat"></div>
-                        <div class="footerEventoChat">
-                            <input class="contenidoEnviarMensajeEvento" type="text">
-                            <p class="boton enviarMensajeEvento">Enviar</p>
-                        </div>
-                    </div>
-                </section>
-                <section class="eventoLinks">
-                    ${evento.links && evento.links.length > 0 ? evento.links.map(link => `
-                            <div class="eventoLink">
-                                <a href="${link.link}" target="_blank">${link.nombre}</a>
+                        <div class="contenidoEvento">
+                            <section class="eventoInfoGeneral">
+                                <img src="${evento.foto}">
+                                <div>
+                                    <div>
+                                        <h2>${evento.nombre}</h2>
+                                        ${evento.descripcion ? `<p>${evento.descripcion}</p>` : ''}
+                                    </div>
+                                    <div>
+                                        <p>El evento empieza el ${new Date(evento.fechaHoraInicio).toLocaleString()}${evento.ubicacion ? ` en ${evento.ubicacion}` : ''} y acaba el ${new Date(evento.fechaHoraFin).toLocaleString()}</p>
+                                    </div>
+                                    <div>
+                                        <p>${evento.privacidad ? "Evento privado" : "Evento público"} y la id del evento es #${idEvento}</p>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="eventoVehiculos">
+                                <div>
+                                    <p class="boton btnMisVehiculos">Mis vehiculos</p>
+                                    <div style="display:none" class="divMisVehiculos"></div>
+                                </div>
+                                <div class="listaVehiculos">
+                                    ${vehiculosHTML}
+                                </div>
+                            </section>
+                            <section class="eventoChat">
+                                <div class="mainEventoChat"></div>
+                                <div class="footerEventoChat">
+                                    <input class="contenidoEnviarMensajeEvento" type="text">
+                                    <p class="boton enviarMensajeEvento">Enviar</p>
+                                </div>
+                            </section>
+                            <section class="eventoLinks">
+                                ${evento.links && evento.links.length > 0 ? evento.links.map(link => `
+                                        <div class="eventoLink">
+                                            <a href="${link.link}" target="_blank">${link.nombre}</a>
+                                        </div>
+                                    `).join('') : '<p>No hay ningún enlace externo</p>'
+                                }
+                            </section>
+                            <section class="eventoListaUsu">
+                                ${usuariosHTML}
+                            </section>
+                            <div class="EventoXIcon">
+                                <p class="boton entrarAbandonar">${participa ? "Abandonar" : "Participar"}</p>
+                                <div class="xIcon">&#10006;</div>
                             </div>
-                        `).join('') : '<p>No hay ningún enlace externo</p>'
-                        }
-                </section>
-                <section class="eventoListaUsu">
-                    ${usuariosHTML}
-                </section>
-                <div class="EventoXIcon">
-                    <p class="boton entrarAbandonar">${participa ? "Abandonar" : "Participar"}</p>
-                    <div class="xIcon">&#10006;</div>
-                </div>
-            </div>
-            `);
+                        </div>
+                    `);
 
                     $(".btnMisVehiculos").off().on("click", async function () {
                         let divMisVehiculos = $(".divMisVehiculos");
@@ -325,6 +323,42 @@ $(function () {
                         $(".contenido").css("background-color", "#D0E7D2");
                     });
 
+                    $(".enviarMensajeEvento").off().on("click", async function () {
+                        let contenidoMensaje = $(".contenidoEnviarMensajeEvento").val();
+
+                        if (contenidoMensaje.trim() !== "") {
+                            try {
+                                let response = await fetch(`/mensajes/usuario/${idUsuario}`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    },
+                                    body: JSON.stringify({
+                                        contenido: contenidoMensaje,
+                                        tipo: "evento",
+                                        id_destino: idEvento,
+                                    })
+                                });
+
+                                if (response.ok) {
+                                    let mensaje = await response.json();
+                                    $(".contenidoEnviarMensajeEvento").val("");
+
+                                    $(".mainEventoChat").append(`
+                                        <p class="mensaje misMensajes">${mensaje.contenido}</p>
+                                        `)
+
+                                } else {
+                                    console.error("Error al enviar el mensaje:", response.statusText);
+                                }
+                            } catch (error) {
+                                console.error("Error al enviar el mensaje:", error);
+                            }
+                        }
+                    });
+
+                    cargarChatEvento(idEvento);
                 } else {
                     console.error("Error al obtener los datos del evento:", responseEvento.statusText);
                 }
@@ -370,6 +404,50 @@ $(function () {
             } catch (error) {
                 console.error("Error al actualizar la lista de vehículos:", error);
                 $(".listaVehiculos").html('<p>Error al cargar los vehículos.</p>');
+            }
+        }
+
+        async function cargarChatEvento(idEvento) {
+            try {
+                let response = await fetch(`/mensajes/evento/${idUsuario}/${idEvento}/evento/`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                });
+
+                if (response.ok) {
+                    let mensajes = await response.json();
+
+                    let mensajesHTML = mensajes.map(mensaje => {
+                        if (mensaje.id_usuario === idUsuario) {
+                            return `
+                                <p class="mensaje misMensajes">${mensaje.contenido}</p>
+                            `;
+                        } else {
+                            return `
+                                <div class="mensaje susMensajes susMensajesEvento">
+                                    <img class="imgAmigoPequeno" src="${mensaje.usuario.foto}" style="width: 50px;">
+                                    <div class="infoMensajeEvento">
+                                        <p><strong>${mensaje.usuario.nombre} ${mensaje.usuario.apellido ?? ''}</strong></p>
+                                        <p class="leyenda">${mensaje.usuario.leyenda ?? ''}</p>
+                                        <p class="contenidoMensaje">${mensaje.contenido}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }).join('');
+
+                    $(".mainEventoChat").html(mensajesHTML);
+
+                    let chatContainer = $(".mainEventoChat")[0];
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                } else {
+                    console.error("Error al obtener los mensajes:", response.statusText);
+                }
+            } catch (error) {
+                console.error("Error al cargar el chat del evento:", error);
             }
         }
     }
@@ -605,7 +683,7 @@ $(function () {
 
                 $(".amigo").off().on("click", async function () {
                     let idAmigo = $(this).attr("id").replace("amigo", "");
-        
+
                     $(".footerTexto").css("display", "flex");
                     $(".headerTexto").html("");
                     $(".mainTexto").html("");
@@ -617,10 +695,10 @@ $(function () {
                                 "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             },
                         });
-        
+
                         if (response.ok) {
                             let infoAmigo = await response.json();
-        
+
                             $(".headerTexto").css("border-bottom", "3px solid #D0E7D2");
                             $(".headerTexto").html(`
                                 <img src="${infoAmigo.foto}" class="img-fluid" style="width: 50px; height: 50px; border-radius: 50%;" />
@@ -629,7 +707,7 @@ $(function () {
                                     <p class="leyenda">${infoAmigo.leyenda ? infoAmigo.leyenda : ""}</p>
                                 </div>   
                             `);
-        
+
                             try {
                                 let response = await fetch(`/mensajes/usuario/${idUsuario}/${idAmigo}/usuario`, {
                                     method: "GET",
@@ -638,10 +716,10 @@ $(function () {
                                         "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                                     },
                                 });
-        
+
                                 if (response.ok) {
                                     let mensajes = await response.json();
-        
+
                                     mensajes.forEach(mensaje => {
                                         let mensajeHTML = `
                                             <p class="${mensaje.id_usuario === idUsuario ? "misMensajes" : "susMensajes"} mensaje">${mensaje.contenido}</p>
@@ -654,11 +732,11 @@ $(function () {
                             } catch (error) {
                                 $(".mainTexto").html("<p>Hubo un problema inesperado, intentalo más tarde.</p>");
                             }
-        
+
                             $(".enviarMensaje").off().on("click", function () {
                                 enviarMensaje(idAmigo);
                             });
-        
+
                         } else {
                             $(".mainTexto").html("<p>No se pudo encontro a tu amigo, intentalo mas tarde</p>");
                         }
@@ -666,14 +744,14 @@ $(function () {
                         $(".mainTexto").html("<p>Hubo un problema inesperado, intentalo mas tarde</p>");
                     }
                 })
-        
+
                 async function enviarMensaje(idAmigo) {
                     let contenido = $(".contenidoEnviarMensaje").val();
-        
+
                     if (!contenido.trim()) {
                         return;
                     }
-        
+
                     try {
                         let response = await fetch(`/mensajes/usuario/${idUsuario}`, {
                             method: "POST",
@@ -687,16 +765,16 @@ $(function () {
                                 id_destino: idAmigo
                             }),
                         });
-        
+
                         if (response.ok) {
                             let mensaje = await response.json();
-        
+
                             let mensajeHTML = `
                                 <p class="mensaje misMensajes">${mensaje.contenido}</p>
                             `;
-        
+
                             $(".mainTexto").append(mensajeHTML);
-        
+
                             $(".contenidoEnviarMensaje").val("");
                         } else {
                             $(".mainTexto").append("<p>No se pudo enviar el mensaje, intenta más tarde.</p>");

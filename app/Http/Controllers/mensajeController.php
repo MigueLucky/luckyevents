@@ -77,15 +77,18 @@ class MensajeController extends Controller
             });
         }
 
-        if ($tipo == 'foro' && $id) {
-            $query->where('id_foro', $id);
+        if ($tipo == 'foro' && $idAmigo) {
+            $query->where('id_foro', $idAmigo);
         }
 
-        if ($tipo == 'evento' && $id) {
-            $query->where('id_evento', $id);
+        if ($tipo == 'evento' && $idAmigo) {
+            $query->where('id_evento', $idAmigo);
         }
 
-        $mensajes = $query->orderBy('created_at', 'asc')->get();
+        $mensajes = $query
+        ->with('usuario')
+        ->orderBy('created_at', 'asc')
+        ->get();
 
         return response()->json($mensajes);
     }
