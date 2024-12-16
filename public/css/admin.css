@@ -1,0 +1,53 @@
+main {
+    display: flex;
+    justify-content: space-around;
+}
+
+main>div {
+    background-color: #79AC78;
+    width: 300px;
+    max-width: 300px;
+}
+
+.headerTodosUsuarios,
+.headerTodosEventos,
+.headerTodosForos {
+    display: flex;
+    justify-content: center;
+}
+
+.mainTodosUsuarios,
+.mainTodosEventos,
+.mainTodosForos {
+    overflow: auto;
+    max-height: 740px;
+}
+
+.evento,
+.foro,
+.usuario {
+    border-top: 5px solid #618264;
+    padding: 5px;
+}
+
+.detrasContenido {
+    visibility: hidden;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10;
+}
+
+.contenido {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    background-color: #D0E7D2;
+    padding: 20px;
+}
