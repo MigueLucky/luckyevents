@@ -197,4 +197,20 @@ class EventoController extends Controller
 
         return response()->json($eventosFiltrados);
     }
+
+    public function quitarReporte($id)
+    {
+        $evento = Evento::find($id);
+
+        if (!$evento) {
+            return response()->json(['error' => 'Evento no encontrado.'], 404);
+        }
+
+        // Establecemos el estado de "reportado" a false
+        $evento->report = false;
+        $evento->razonReport = null; // Limpiamos la razón del reporte
+        $evento->save();
+
+        return response()->json(['message' => 'Reporte del evento eliminado correctamente.']);
+    }
 }

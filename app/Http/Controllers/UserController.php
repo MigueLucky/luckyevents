@@ -127,4 +127,36 @@ class UserController extends Controller
         $user->delete();
         return response()->json(['message' => 'Deleted successfully']);
     }
+
+    // Bloquear usuario
+    public function bloquear($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado.'], 404);
+        }
+
+        // Cambiar el estado de bloqueado a true
+        $user->bloqueado = true;
+        $user->save();
+
+        return response()->json(['message' => 'Usuario bloqueado correctamente.']);
+    }
+
+    // Desbloquear usuario
+    public function desbloquear($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado.'], 404);
+        }
+
+        // Cambiar el estado de bloqueado a false
+        $user->bloqueado = false;
+        $user->save();
+
+        return response()->json(['message' => 'Usuario desbloqueado correctamente.']);
+    }
 }

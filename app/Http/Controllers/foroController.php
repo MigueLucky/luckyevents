@@ -36,4 +36,21 @@ class ForoController extends Controller
         $foro->delete();
         return response()->json(['message' => 'Deleted successfully']);
     }
+
+    // Método para quitar el reporte de un foro
+    public function quitarReporte($id)
+    {
+        $foro = Foro::find($id);
+
+        if (!$foro) {
+            return response()->json(['error' => 'Foro no encontrado.'], 404);
+        }
+
+        // Establecemos el estado de "reportado" a false
+        $foro->report = false;
+        $foro->razonReport = null; // Limpiamos la razón del reporte
+        $foro->save();
+
+        return response()->json(['message' => 'Reporte del foro eliminado correctamente.']);
+    }
 }

@@ -87,6 +87,8 @@ Route::post('/update/{id}', [UserController::class, 'update']);
 Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/cambiarContrasena/{id}', [UserController::class, 'cambiarContrasena']);
+Route::put('/users/{user}/bloquear', [UserController::class, 'bloquear'])->name('users.bloquear');
+Route::patch('/users/{user}/bloquear', [UserController::class, 'desbloquear'])->name('users.desbloquear');
 
 Route::resource('eventos', eventoController::class);
 Route::post('/eventosPorUsuario', [EventoController::class, 'eventosPorUsuario']);
@@ -95,8 +97,10 @@ Route::get('/vehiculosPorEvento/{id}', [EventoController::class, 'vehiculosPorEv
 Route::post('/participarEvento/{id}', [EventoController::class, 'participarEvento']);
 Route::post('/abandonarEvento/{id}', [EventoController::class, 'abandonarEvento']);
 Route::get('/eventosPorUbiFavorita', [EventoController::class, 'eventosPorUbiFavorita']);
+Route::patch('/eventos/{evento}/quitarReporte', [EventoController::class, 'quitarReporte'])->name('eventos.quitarReporte');
 
 Route::resource('foros', foroController::class);
+Route::patch('/foros/{foro}/quitarReporte', [ForoController::class, 'quitarReporte'])->name('foros.quitarReporte');
 
 Route::resource('mensajes', mensajeController::class);
 Route::post('/amigosPorUsuario', [mensajeController::class, 'amigosPorUsuario']);
