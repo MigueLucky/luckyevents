@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Foro;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ForoController extends Controller
 {
@@ -20,7 +21,7 @@ class ForoController extends Controller
 
     public function show($id)
     {
-        return Foro::findOrFail($id);
+        return response()->json(Foro::findOrFail($id));
     }
 
     public function update(Request $request, $id)
@@ -65,5 +66,108 @@ class ForoController extends Controller
             ->get();
 
         return response()->json($foros);
+    }
+
+    public function usuariosPorForo($id)
+    {
+        $foro = Foro::findOrFail($id);
+
+        $usuarios = $foro->usuarios()->get();
+
+        return response()->json($usuarios->map(function ($usuario) {
+            return [
+                'id' => $usuario->id,
+                'foto' => $usuario->foto,
+                'nombre' => $usuario->nombre,
+                'apellido' => $usuario->apellido,
+            ];
+        }));
+    }
+
+    public function reportarForo($id, Request $request)
+    {
+        // Validar la razón del reporte
+        $request->validate([
+            'razonReport' => 'required|string|max:255',
+        ]);
+
+        try {
+            // Buscar el foro por ID
+            $foro = Foro::findOrFail($id);
+
+            // Actualizar o sobrescribir el reporte
+            $foro->update([
+                'report' => true,
+                'razonReport' => $request->razonReport,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Foro reportado correctamente.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al reportar el foro.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function participarForo($idForo, Request $request)
+    {
+        try {
+            $idUsuario = $request->input('idUsuario');
+
+            $foro = DB::table('foros')->where('id', $idForo)->first();
+            if (!$foro) {
+                return response()->json(['error' => 'El foro no existe.'], 404);
+            }
+
+            $existe = DB::table('usuario_foros')
+                ->where('id_foro', $idForo)
+                ->where('id_usuario', $idUsuario)
+                ->exists();
+
+            if ($existe) {
+                return response()->json(['message' => 'Ya estás participando en este foro.'], 200);
+            }
+
+            DB::table('usuario_foros')->insert([
+                'id_foro' => $idForo,
+                'id_usuario' => $idUsuario,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            return response()->json(['message' => 'Te has unido al foro exitosamente.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Hubo un error al unirte al foro.'], 500);
+        }
+    }
+
+    public function abandonarForo($idForo, Request $request)
+    {
+        try {
+            $idUsuario = $request->input('idUsuario');
+
+            $foro = DB::table('foros')->where('id', $idForo)->first();
+            if (!$foro) {
+                return response()->json(['error' => 'El foro no existe.'], 404);
+            }
+
+            $deleted = DB::table('usuario_foros')
+                ->where('id_foro', $idForo)
+                ->where('id_usuario', $idUsuario)
+                ->delete();
+
+            if ($deleted) {
+                return response()->json(['message' => 'Has abandonado el foro exitosamente.'], 200);
+            } else {
+                return response()->json(['message' => 'No estabas participando en este foro.'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Hubo un error al abandonar el foro.'], 500);
+        }
     }
 }

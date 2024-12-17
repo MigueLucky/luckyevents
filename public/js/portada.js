@@ -1213,7 +1213,10 @@ $(function () {
         window.location.href = '/listaForos';
     })
 
+    
+
     async function forosPorUsuario() {
+        $(".mainForo").html("");
         try {
             let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -1246,7 +1249,264 @@ $(function () {
         } catch (error) {
             $(".mainForo").append("<p>Hubo un error en la comunicación con el servidor.</p>");
         }
-    }
 
+
+        $(".foro").off().on("click", async function () {
+            let idForo = $(this).attr("id").replace("foro", "");
+            let foro;
+            let participa = false;
+
+            try {
+                let responseForo = await fetch(`/foros/${idForo}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    }
+                });
+
+                if (responseForo.ok) {
+                    foro = await responseForo.json();
+
+                    $(".contenido").css("background-color", foro.color);
+
+                    let responseUsuarios = await fetch(`/usuariosPorForo/${idForo}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                    });
+
+                    let usuariosHTML = '';
+                    if (responseUsuarios.ok) {
+                        let usuariosForo = await responseUsuarios.json();
+                        if (usuariosForo.length > 0) {
+                            usuariosForo.forEach(usuarioForo => {
+                                if (usuarioForo.id === idUsuario) {
+                                    participa = true;
+                                }
+                                usuariosHTML += `
+                        <div class="usuario">
+                            <img class="imgUsuario" src="${usuarioForo.foto}">
+                            <div>
+                                <p>${usuarioForo.nombre}${usuarioForo.apellido ? ' ' + usuarioForo.apellido : ''}</p>
+                            </div>
+                        </div>
+                    `;
+                            });
+                        } else {
+                            usuariosHTML = '<p>No hay usuarios en este evento.</p>';
+                        }
+                    } else {
+                        console.error("Error al obtener los usuarios:", responseUsuarios.statusText);
+                    }
+
+                    $('.detrasContenido').css('visibility', 'visible');
+                    $('.contenido').html(`
+                        <div class="contenidoEvento">
+                            <section class="eventoInfoGeneral">
+                                <img src="${foro.foto}">
+                                <div>
+                                    <div>
+                                        <h2>${foro.nombre}</h2>
+                                        ${foro.descripcion ? `<p>${foro.descripcion}</p>` : ''}
+                                    </div>
+                                    <div>
+                                        <p>${foro.ubicacion ? ` Foros de eventos en ${foro.ubicacion}` : ''}</p>
+                                    </div>
+                                    <div>
+                                        <p>La id del foro es #${idForo}</p>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="eventoChat foroChat">
+                                <div class="mainEventoChat"></div>
+                                <div class="footerEventoChat">
+                                    <input class="contenidoEnviarMensajeEvento" type="text">
+                                    <p class="boton enviarMensajeEvento">Enviar</p>
+                                </div>
+                            </section>
+                            <section class="eventoListaUsu foroListaUsu">
+                                ${usuariosHTML}
+                            </section>
+                            <div class="EventoXIcon">
+                                <div>
+                                    <p class="reportarEvento">Reportar</p>
+                                    <div class="divReportes" style="display: none">
+                                        <input type="text" placeholder="Razon del reporte" class="razonReport">
+                                        <p class="boton enviarRazonReport">Enviar reporte</p>
+                                    </div>
+                                </div>
+                                <p class="boton entrarAbandonar">${participa ? "Abandonar" : "Participar"}</p>
+                                <div class="xIcon">&#10006;</div>
+                            </div>
+                        </div>
+                    `);
+
+                    $(".reportarEvento").off();
+                    $(".reportarEvento").on("mouseenter", function () {
+                        $(this).css("background-color", "indianred")
+                    })
+
+                    $(".reportarEvento").on("mouseleave", function () {
+                        $(this).css("background-color", "red")
+                    })
+
+                    $(".reportarEvento").on("click", function () {
+                        $(".divReportes").toggle();
+                    })
+
+                    $(".enviarRazonReport").off().on("click", async function () {
+                        let razonReport = $(".razonReport").val().trim();
+
+                        if (razonReport !== "") {
+                            try {
+                                await fetch(`/reportarForo/${idForo}`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                                    },
+                                    body: JSON.stringify({ razonReport: razonReport }),
+                                });
+
+                                $(".divReportes").hide();
+                                $(".razonReport").val("")
+                            } catch (error) {
+                                console.error("Error al enviar el reporte:", error);
+                            }
+                        }
+                    })
+
+                    $(".entrarAbandonar").off().on("click", async function () {
+                        let accion = $(this).text();
+                        try {
+                            if (accion === "Participar") {
+                                let response = await fetch(`/participarForo/${idForo}`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    },
+                                    body: JSON.stringify({ idUsuario }),
+                                });
+                                if (response.ok) {
+                                    $(this).text("Abandonar");
+                                    forosPorUsuario();
+                                }
+                            } else if (accion === "Abandonar") {
+                                let response = await fetch(`/abandonarForo/${idForo}`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    },
+                                    body: JSON.stringify({ idUsuario }),
+                                });
+                                if (response.ok) {
+                                    $(this).text("Participar");
+                                    forosPorUsuario();
+                                }
+                            }
+                        } catch (error) {
+                            console.error("Error en la acción del botón:", error);
+                        }
+                    });
+
+                    $(".xIcon").off().on("click", function () {
+                        $('.detrasContenido').css('visibility', 'hidden');
+                        $('.contenido').html("");
+                        $(".contenido").css("background-color", "#D0E7D2");
+                    });
+
+                    $(".enviarMensajeEvento").off().on("click", async function () {
+                        let contenidoMensaje = $(".contenidoEnviarMensajeEvento").val();
+
+                        if (contenidoMensaje.trim() !== "") {
+                            try {
+                                let response = await fetch(`/mensajes/usuario/${idUsuario}`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    },
+                                    body: JSON.stringify({
+                                        contenido: contenidoMensaje,
+                                        tipo: "foro",
+                                        id_destino: idForo,
+                                    })
+                                });
+
+                                if (response.ok) {
+                                    let mensaje = await response.json();
+                                    $(".contenidoEnviarMensajeEvento").val("");
+
+                                    $(".mainEventoChat").append(`
+                                        <p class="mensaje misMensajes">${mensaje.contenido}</p>
+                                        `)
+
+                                } else {
+                                    console.error("Error al enviar el mensaje:", response.statusText);
+                                }
+                            } catch (error) {
+                                console.error("Error al enviar el mensaje:", error);
+                            }
+                        }
+                    });
+
+                    cargarChatEvento(idForo);
+                } else {
+                    console.error("Error al obtener los datos del evento:", responseEvento.statusText);
+                }
+            } catch (error) {
+                console.error("Error al cargar el evento:", error);
+            }
+        });
+
+        async function cargarChatEvento(idForo) {
+            try {
+                let response = await fetch(`/mensajes/evento/${idUsuario}/${idForo}/foro/`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                });
+
+                if (response.ok) {
+                    let mensajes = await response.json();
+
+                    let mensajesHTML = mensajes.map(mensaje => {
+                        if (mensaje.id_usuario === idUsuario) {
+                            return `
+                                <p class="mensaje misMensajes">${mensaje.contenido}</p>
+                            `;
+                        } else {
+                            return `
+                                <div class="mensaje susMensajes susMensajesEvento">
+                                    <img class="imgAmigoPequeno" src="${mensaje.usuario.foto}" style="width: 50px;">
+                                    <div class="infoMensajeEvento">
+                                        <p><strong>${mensaje.usuario.nombre} ${mensaje.usuario.apellido ?? ''}</strong></p>
+                                        <p class="leyenda">${mensaje.usuario.leyenda ?? ''}</p>
+                                        <p class="contenidoMensaje">${mensaje.contenido}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }).join('');
+
+                    $(".mainEventoChat").html(mensajesHTML);
+
+                    let chatContainer = $(".mainEventoChat")[0];
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                } else {
+                    console.error("Error al obtener los mensajes:", response.statusText);
+                }
+            } catch (error) {
+                console.error("Error al cargar el chat del evento:", error);
+            }
+        }
+    }
     forosPorUsuario()
 });
