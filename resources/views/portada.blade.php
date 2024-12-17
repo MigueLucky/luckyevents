@@ -18,7 +18,7 @@
                 <div id="salirSinGuardar">
                     <h3>No has terminado el evento ¿seguro que quieres salir?</h3>
                     <div>
-                        <p class="boton">Volver al evento</p>
+                        <p class="boton">Volver</p>
                         <p class="boton">Salir</p>
                         <p class="boton">Guardar y salir</p>
                     </div>

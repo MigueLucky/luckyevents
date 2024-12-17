@@ -146,7 +146,7 @@ $(function () {
                                         <p>El evento empieza el ${new Date(evento.fechaHoraInicio).toLocaleString()}${evento.ubicacion ? ` en ${evento.ubicacion}` : ''} y acaba el ${new Date(evento.fechaHoraFin).toLocaleString()}</p>
                                     </div>
                                     <div>
-                                        <p>${evento.privacidad ? "Evento privado" : "Evento público"} y la id del evento es #${idEvento}</p>
+                                        <p>${evento.privacidad ? "Evento privado" : "Evento público"} y el id del evento es #${idEvento}</p>
                                     </div>
                                 </div>
                             </section>
@@ -676,7 +676,7 @@ $(function () {
 
             $('#detrasSalirSinGuardar div p').off().on("click", function () {
                 switch ($(this).text()) {
-                    case "Volver al evento":
+                    case "Volver":
                         $('#detrasSalirSinGuardar').css('visibility', 'hidden');
                         break;
                     case "Salir":
@@ -1299,6 +1299,132 @@ $(function () {
         }
     });
 
+    $(".idCrearForo").off().on('click', function () {
+        $('.detrasContenido').css('visibility', 'visible');
+        $('.contenido').html(`
+            <div class="tituloContenido">
+                <h2>Creación de foros:</h2>
+                <div class="xIcon">&#10006;</div>
+            </div>
+            <div class="contenidoCrearEvento">
+                <div>
+                    <label for="nombreForo">Nombre:</label>
+                    <input type="text" id="nombreForo" name="nombreForo" placeholder="Nombre del foro">
+                </div>
+                <div>
+                    <label for="descripcionForo">Descripción:</label>
+                    <input type="text" id="descripcionForo" name="descripcionForo" placeholder="Descripción del foro">
+                </div>
+                <div>
+                    <label for="colorForo">Color del foro:</label>
+                    <input type="color" id="colorForo" name="colorForo" value="#618264">
+                </div>
+                <div>
+                    <label for="ubicacionForo">Ubicación:</label>
+                    <input type="text" id="ubicacionForo" name="ubicacionForo" placeholder="Ubicación del foro">
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <label for="fotoForo">Foto para el foro:</label>
+                    <input type="file" id="fotoForo" accept="image/*" style="width: 45%">
+                    <div id="preview"></div>
+                </div>
+            </div>
+            <p class="mensajeError2" style="color:red;"></p>
+            <p class="boton" id="guardarYSalir" style="margin: 1% 10% 1% 10%">Guardar y salir</p>
+        `);
+
+        $("#fotoForo").off().on("change", function (e) {
+            let file = e.target.files[0];
+            let preview = $("#preview");
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.html(`<img src="${e.target.result}" style="max-width: 100px; max-height: 100px;">`);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.html("");
+            }
+        });
+
+        $("#guardarYSalir").off().on("click", function () {
+            guardarYSalir();
+        });
+
+        async function guardarYSalir() {
+            let nombre = $("#nombreForo").val();
+            let descripcion = $("#descripcionForo").val();
+            let colorForo = $("#colorForo").val();
+            let ubicacionForo = $("#ubicacionForo").val();
+            let fotoForo;
+            if ($("#fotoForo")[0].files[0] === undefined || $("#fotoForo")[0].files[0] === null) {
+                fotoForo = "/img/default/foroDefault.jpg";
+            } else {
+                fotoForo = $("#fotoForo")[0].files[0];
+            }
+
+            if (!nombre) {
+                $(".mensajeError2").text("El nombre es obligatorio");
+                $('#detrasSalirSinGuardar').css('visibility', 'hidden');
+            } else {
+                $(".mensajeError2").text("");
+
+                try {
+                    let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    let formData = new FormData();
+                    formData.append("nombre", nombre);
+                    formData.append("foto", fotoForo);
+                    formData.append("descripcion", descripcion);
+                    formData.append("ubicacion", ubicacionForo);
+                    formData.append("color", colorForo);
+
+                    let response = await fetch("foros", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": csrfToken
+                        },
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        forosPorUsuario();
+                        $('#detrasSalirSinGuardar').css('visibility', 'hidden');
+                        $('.detrasContenido').css('visibility', 'hidden');
+                        $('.contenido').html("");
+                    } else {
+                        $(".mensajeError2").text("Error al crear el foro");
+                        let responseData = await response.json();
+                        $(".mensajeError2").text(responseData.error);
+                    }
+                } catch (error) {
+                    $(".mensajeError2").text("Error al crear el evento, vuelve a intentarlo");
+                }
+            }
+        }
+
+        $(".xIcon").off().on("click", function () {
+            $('#detrasSalirSinGuardar').css('visibility', 'visible');
+
+            $('#detrasSalirSinGuardar div p').off().on("click", function () {
+                switch ($(this).text()) {
+                    case "Volver":
+                        $('#detrasSalirSinGuardar').css('visibility', 'hidden');
+                        break;
+                    case "Salir":
+                        $('#detrasSalirSinGuardar').css('visibility', 'hidden');
+                        $('.detrasContenido').css('visibility', 'hidden');
+                        $('.contenido').html("");
+                        break;
+                    case "Guardar y salir":
+                        guardarYSalir();
+                        break;
+                }
+            });
+        });
+    });
+
     async function forosPorUsuario() {
         $(".mainForo").html("");
         try {
@@ -1400,7 +1526,7 @@ $(function () {
                                         <p>${foro.ubicacion ? ` Foros de eventos en ${foro.ubicacion}` : ''}</p>
                                     </div>
                                     <div>
-                                        <p>La id del foro es #${idForo}</p>
+                                        <p>El id del foro es #${idForo}</p>
                                     </div>
                                 </div>
                             </section>

@@ -15,8 +15,40 @@ class ForoController extends Controller
 
     public function store(Request $request)
     {
-        $foro = Foro::create($request->all());
-        return response()->json($foro, 201);
+        $data = $request->only([
+            'nombre',
+            'foto',
+            'descripcion',
+            'ubicacion',
+            'color'
+        ]);
+
+        if ($request->hasFile('foto')) {
+            $path = $request->file('foto')->store('foros', 'public');
+            $path = "storage/" . $path;
+        } else if ($data['foto']) {
+            $path = $data['foto'];
+        } else {
+            $path = "/img/default/foroDefault.jpg";
+        }
+
+        try {
+
+            $foro = Foro::create([
+                'nombre' => $data['nombre'],
+                'foto' => $path,
+                'descripcion' => $data['descripcion'] ?? null,
+                'ubicacion' => $data['ubicacion'] ?? null,
+                'color' => $data['color'] ?? '#618264',
+            ]);
+
+            $idUsuario = auth()->id();
+            $foro->usuarios()->attach($idUsuario);
+
+            return response()->json($foro, 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al crear el foro: ' . $e->getMessage()], 500);
+        }
     }
 
     public function show($id)
