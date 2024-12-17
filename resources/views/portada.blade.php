@@ -66,7 +66,7 @@
                 <div class="addForoDiv">
                     <label for="idAddForo">Id del foro:</label>
                     <input type="text" id="idAddForo" name="idAddForo" placeholder="#0000">
-                    <p class="idAddForo boton" style="margin: 0;">Unirse</p>
+                    <p class="addForo boton" style="margin: 0;">Unirse</p>
                     <p class="resultadoAddForo" style="color: red;"></p>
                 </div>
                 <p class="boton listarForos">Lista de foros</p>

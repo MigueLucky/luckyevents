@@ -1213,7 +1213,91 @@ $(function () {
         window.location.href = '/listaForos';
     })
 
-    
+    $(".addForo").off().on("click", async function () {
+        let idForoUnirse = $("#idAddForo").val().replace("#", "");
+        let resultadoAddForo = $(".resultadoAddForo");
+
+        if (!idForoUnirse) {
+            resultadoAddForo.text("Por favor, ingresa un ID válido para el foro.");
+        } else {
+            try {
+                let response = await fetch(`/foros/${idForoUnirse}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    }
+                });
+
+                if (response.ok) {
+                    let foro = await response.json();
+
+                    $('.detrasContenido').css('visibility', 'visible');
+                    $('.contenido').css('width', 'auto'); 
+                    $(".contenido").css("background-color", foro.color);
+                    $('.contenido').html(`
+                                <div style="background-color: #D0E7D2; padding:15px; display:flex; flex-direction:column;">
+                                    <div class="xIcon xIconEventoPublico">&#10006;</div>
+                                    <img src="${foro.foto}" style="max-width: 400px; align-self:center"/>
+                                    <div>
+                                        <h2 style="text-align:center">${foro.nombre}</h2>
+                                        <p><strong>Descripción:</strong> ${foro.descripcion ? foro.descripcion : "No tiene descripción"}</p>
+                                        <p><strong>Ubicación:</strong> ${foro.ubicacion ? foro.ubicacion : "Ubicación no especificada"}</p>
+                                    </div>
+                                    <p class="boton unirseEventoPublico">Unirse al foro</p>
+                                </div>
+                            `);
+
+                    $(".xIcon").off().on("click", function () {
+                        $('.detrasContenido').css('visibility', 'hidden');
+                        $('.contenido').css('width', '90%');
+                        $(".contenido").css("background-color", "#D0E7D2");
+                        $('.contenido').html("");
+                    });
+
+                    $(".unirseEventoPublico").off().on("click", async function () {
+                        try {
+                            let responseUnirse = await fetch(`/participarForo/${idForoUnirse}`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                },
+                                body: JSON.stringify({
+                                    idUsuario: idUsuario
+                                })
+                            });
+
+                            if (responseUnirse.ok) {
+                                $('.detrasContenido').css('visibility', 'hidden');
+                                $('.contenido').css('width', '90%');
+                                $(".contenido").css("background-color", "#D0E7D2");
+                                $('.contenido').html("");
+
+                                forosPorUsuario();
+                            } else {
+                                $('.detrasContenido').css('visibility', 'hidden');
+                                $('.contenido').css('width', '90%');
+                                $(".contenido").css("background-color", "#D0E7D2");
+                                $('.contenido').html("");
+                                console.error("Error al unirse al foro:", responseUnirse.statusText);
+                            }
+                        } catch (error) {
+                            console.error("Hubo un error al unirse al foro:", error);
+                        }
+                    });
+
+                } else if (response.status === 404) {
+                    resultadoAddForo.text("El foro no existe. Por favor, verifica la ID ingresada.");
+                } else {
+                    resultadoAddForo.text("Hubo un error al verificar el foro. Inténtalo nuevamente.");
+                }
+            } catch (error) {
+                console.error("Error al verificar el evento:", error);
+                resultadoAddForo.text("Error al verificar el foro. Inténtalo más tarde.");
+            }
+        }
+    });
 
     async function forosPorUsuario() {
         $(".mainForo").html("");
