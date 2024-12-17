@@ -13,7 +13,17 @@
 <body>
     @include('components.header')
     <main>
-        <article class="ordenYFiltro"></article>
+        <article class="detrasContenido">
+            <section class="contenido"></section>
+        </article>
+        <article class="ordenYEntrar">
+            <div class="addForoDiv">
+                <label for="idAddForo">Id del foro:</label>
+                <input type="text" id="idAddForo" name="idAddForo" placeholder="#0000">
+                <p class="addForo boton" style="margin: 0;">Participar</p>
+                <p class="resultadoAddForo" style="color: red;"></p>
+            </div>
+        </article>
         <article class="todosForos">
         </article>
     </main>

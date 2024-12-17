@@ -36,12 +36,14 @@
     margin: 30px;
     text-align: center;
     border-radius: 25px;
+    cursor: pointer;
 }
 
 .eventoPublico img {
     width: 250px;
     height: 150px;
     border-radius: 25px 25px 0px 0px;
+    object-fit: cover;
 }
 
 .eventoPublico p{
@@ -58,8 +60,4 @@
 .xIconEventoPublico {
     position: absolute;
     right: 45px;
-}
-
-.eventoPublico {
-    cursor: pointer;
 }

@@ -1,0 +1,63 @@
+.addForoDiv {
+    display: flex;
+    align-items: center;
+    margin: 5px;
+}
+
+.detrasContenido {
+    visibility: hidden;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10;
+}
+
+.contenido {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    background-color: #D0E7D2;
+    padding: 20px;
+}
+
+.todosForos {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.foro {
+    max-width: 250px;
+    margin: 30px;
+    text-align: center;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.foro img {
+    width: 250px;
+    height: 150px;
+    border-radius: 25px 25px 0px 0px;
+    object-fit: cover;
+}
+
+.foro p{
+    margin: 5px;
+}
+
+.xIcon {
+    color: red;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.xIconForo {
+    position: absolute;
+    right: 45px;
+}
