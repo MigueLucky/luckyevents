@@ -10,7 +10,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 98vh;
+    width: 98vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.8);
     z-index: 10;
