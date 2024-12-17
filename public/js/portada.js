@@ -172,17 +172,59 @@ $(function () {
                                             <a href="${link.link}" target="_blank">${link.nombre}</a>
                                         </div>
                                     `).join('') : '<p>No hay ningún enlace externo</p>'
-                                }
+                        }
                             </section>
                             <section class="eventoListaUsu">
                                 ${usuariosHTML}
                             </section>
                             <div class="EventoXIcon">
+                                <div>
+                                    <p class="reportarEvento">Reportar</p>
+                                    <div class="divReportes" style="display: none">
+                                        <input type="text" placeholder="Razon del reporte" class="razonReport">
+                                        <p class="boton enviarRazonReport">Enviar reporte</p>
+                                    </div>
+                                </div>
                                 <p class="boton entrarAbandonar">${participa ? "Abandonar" : "Participar"}</p>
                                 <div class="xIcon">&#10006;</div>
                             </div>
                         </div>
                     `);
+
+                    $(".reportarEvento").off();
+                    $(".reportarEvento").on("mouseenter", function () {
+                        $(this).css("background-color", "indianred")
+                    })
+
+                    $(".reportarEvento").on("mouseleave", function () {
+                        $(this).css("background-color", "red")
+                    })
+
+                    $(".reportarEvento").on("click", function () {
+                        $(".divReportes").toggle();
+                    })
+
+                    $(".enviarRazonReport").off().on("click", async function () {
+                        let razonReport = $(".razonReport").val().trim();
+
+                        if (razonReport !== "") {
+                            try {
+                                await fetch(`/reportarEvento/${idEvento}`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                                    },
+                                    body: JSON.stringify({ razonReport: razonReport }),
+                                });
+
+                                $(".divReportes").hide();
+                                $(".razonReport").val("")
+                            } catch (error) {
+                                console.error("Error al enviar el reporte:", error);
+                            }
+                        }
+                    })
 
                     $(".btnMisVehiculos").off().on("click", async function () {
                         let divMisVehiculos = $(".divMisVehiculos");
@@ -1167,4 +1209,44 @@ $(function () {
     });
 
     //Foros
+    $(".listarForos").off().on("click", function () {
+        window.location.href = '/listaForos';
+    })
+
+    async function forosPorUsuario() {
+        try {
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            let response = await fetch("/forosPorUsuario", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken
+                },
+                body: JSON.stringify({
+                    idUsuario: idUsuario
+                }),
+            });
+
+            if (response.ok) {
+                let foros = await response.json();
+
+                foros.forEach(foro => {
+                    let foroHtml = `
+                        <section class="foro" id="foro${foro.id}" style="background-color:${foro.color};">
+                            <img class="imgEventoPequeno" src="${foro.foto}">
+                            <p>${foro.nombre}</p>
+                        </section>
+                    `;
+                    $(".mainForo").append(foroHtml);
+                });
+            } else {
+                $(".mainForo").append("<p>No se pudieron cargar los foros.</p>");
+            }
+        } catch (error) {
+            $(".mainForo").append("<p>Hubo un error en la comunicación con el servidor.</p>");
+        }
+    }
+
+    forosPorUsuario()
 });

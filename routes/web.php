@@ -98,9 +98,11 @@ Route::post('/participarEvento/{id}', [EventoController::class, 'participarEvent
 Route::post('/abandonarEvento/{id}', [EventoController::class, 'abandonarEvento']);
 Route::get('/eventosPorUbiFavorita', [EventoController::class, 'eventosPorUbiFavorita']);
 Route::patch('/eventos/{evento}/quitarReporte', [EventoController::class, 'quitarReporte'])->name('eventos.quitarReporte');
+Route::post('/reportarEvento/{id}', [EventoController::class, 'reportarEvento'])->name('reportarEvento');
 
 Route::resource('foros', foroController::class);
 Route::patch('/foros/{foro}/quitarReporte', [ForoController::class, 'quitarReporte'])->name('foros.quitarReporte');
+Route::post('/forosPorUsuario', [foroController::class, 'forosPorUsuario']);
 
 Route::resource('mensajes', mensajeController::class);
 Route::post('/amigosPorUsuario', [mensajeController::class, 'amigosPorUsuario']);

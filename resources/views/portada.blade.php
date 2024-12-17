@@ -70,6 +70,7 @@
                     <p class="resultadoAddForo" style="color: red;"></p>
                 </div>
                 <p class="boton listarForos">Lista de foros</p>
+                <p class="idCrearForo boton" style="margin: 0;">Crear nuevo foro</p>
             </div>
             <div class="mainForo"></div>
         </article>

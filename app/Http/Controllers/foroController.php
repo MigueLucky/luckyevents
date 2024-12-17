@@ -53,4 +53,17 @@ class ForoController extends Controller
 
         return response()->json(['message' => 'Reporte del foro eliminado correctamente.']);
     }
+
+    public function forosPorUsuario(Request $request)
+    {
+        $idUsuario = $request->input('idUsuario');
+
+        $foros = Foro::whereHas('usuarios', function ($query) use ($idUsuario) {
+            $query->where('id_usuario', $idUsuario);
+        })
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json($foros);
+    }
 }

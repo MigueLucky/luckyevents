@@ -213,4 +213,34 @@ class EventoController extends Controller
 
         return response()->json(['message' => 'Reporte del evento eliminado correctamente.']);
     }
+
+    public function reportarEvento($id, Request $request)
+    {
+        // Validar la razón del reporte
+        $request->validate([
+            'razonReport' => 'required|string|max:255',
+        ]);
+
+        try {
+            // Buscar el evento por ID
+            $evento = Evento::findOrFail($id);
+
+            // Actualizar o sobrescribir el reporte
+            $evento->update([
+                'report' => true,
+                'razonReport' => $request->razonReport,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Evento reportado correctamente.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al reportar el evento.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
