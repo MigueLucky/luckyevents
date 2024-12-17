@@ -12,7 +12,21 @@ class Vehiculos_eventosTableSeeder extends Seeder
         DB::table('vehiculos_eventos')->insert([
             [
                 'id_vehiculo' => 1,
-                'id_evento' => 1,
+                'id_evento' => 50,
+                'ocupantes' => json_encode([1, 2]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id_vehiculo' => 3,
+                'id_evento' => 50,
+                'ocupantes' => json_encode([1, 2]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id_vehiculo' => 4,
+                'id_evento' => 50,
                 'ocupantes' => json_encode([1, 2]),
                 'created_at' => now(),
                 'updated_at' => now(),

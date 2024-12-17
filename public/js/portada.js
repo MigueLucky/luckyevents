@@ -1055,7 +1055,7 @@ $(function () {
                         $('.contenido').html(`
                             <div style="background-color: #D0E7D2; padding:15px;">
                                 <div class="xIcon xIconEventoPublico">&#10006;</div>
-                                <img src="${evento.foto}" style="max-width: 400px;"/>
+                                <img src="${evento.foto}" style="width: 300px;height:300px;object-fit: cover;"/>
                                 <div>
                                     <h2 style="text-align:center">${evento.nombre}</h2>
                                     <p><strong>Descripción:</strong> ${evento.descripcion ? evento.descripcion : "No tiene descripción"}</p>
@@ -1238,7 +1238,7 @@ $(function () {
                     $('.contenido').html(`
                                 <div style="background-color: #D0E7D2; padding:15px; display:flex; flex-direction:column;">
                                     <div class="xIcon xIconForo">&#10006;</div>
-                                    <img src="${foro.foto}" style="max-width: 400px; align-self:center"/>
+                                    <img src="${foro.foto}" style="width: 300px;height:300px;object-fit: cover;"/>
                                     <div>
                                         <h2 style="text-align:center">${foro.nombre}</h2>
                                         <p><strong>Descripción:</strong> ${foro.descripcion ? foro.descripcion : "No tiene descripción"}</p>
