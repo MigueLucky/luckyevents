@@ -152,7 +152,7 @@ $(function () {
                     $(".contenido").css("background-color", foro.color);
                     $('.contenido').html(`
                         <div style="background-color: #D0E7D2; padding:15px; display:flex; flex-direction:column;">
-                            <div class="xIcon xIconEventoPublico">&#10006;</div>
+                            <div class="xIcon xIconForo">&#10006;</div>
                             <img src="${foro.foto}" style="width: 300px;height:300px;object-fit: cover;"/>
                             <div>
                                 <h2 style="text-align:center">${foro.nombre}</h2>

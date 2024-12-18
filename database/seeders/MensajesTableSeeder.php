@@ -61,7 +61,7 @@ class MensajesTableSeeder extends Seeder
                 'id_evento' => null,
                 'id_foro' => null, 
                 'contenido' => 'Soy alergico al cacao',
-                'created_at' => now()->addYear(),
+                'created_at' => now()->addSecond(),
                 'updated_at' => now(),
             ],
             [
@@ -70,7 +70,7 @@ class MensajesTableSeeder extends Seeder
                 'id_evento' => null,
                 'id_foro' => null, 
                 'contenido' => 'A',
-                'created_at' => now()->addYear(2),
+                'created_at' => now()->addSeconds(2),
                 'updated_at' => now(),
             ],
             [
